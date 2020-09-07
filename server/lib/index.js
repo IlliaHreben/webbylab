@@ -7,10 +7,10 @@ const {handleError} = require('./controllers/middleware')
 const api = express.Router()
   .use(handleError)
   .post('/film', controllers.films.create)
-  // .get('/film', )
+  .get('/film', controllers.films.info)
   .delete('/film', controllers.films.remove)
-  // .get('/films', )
-  // .get('/findFilm', )
+  .get('/films', controllers.films.getAll)
+  .get('/findFilm', controllers.films.findOne)
   // .post('/importFilms', )
 
 
