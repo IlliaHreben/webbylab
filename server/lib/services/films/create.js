@@ -10,7 +10,6 @@ const { Films, Actors } = require('../../model')
 // }
 
 const execute = async ({name, releaseDate, format, actorsList}) => {
-
   try {
     const user = await Films.create({
       name,
@@ -20,7 +19,7 @@ const execute = async ({name, releaseDate, format, actorsList}) => {
 
     return {id: user.id}
   } catch (err) {
-    console.log(err)
+    throw err
   //   if (err instanceof UniqueConstraintError) {
   //     throw new ApiError({code: 'EMAIL_NOT_UNIQUE', message: 'User already exist'})
   //   }
