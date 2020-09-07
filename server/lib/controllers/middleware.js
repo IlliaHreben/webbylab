@@ -1,12 +1,15 @@
 const ApiError = require('../services/apiError')
 
-const handleError = async (_, res, next) => {
-  try {
-    // console.log("--------------------------------")
-    await next()
-
-  } catch (err) {
-    console.log("--------------------------------")
+const handleError = async (err, _, res, next) => {
+  // try {
+  //   // console.log("--------------------------------")
+  //   await next()
+  //
+  // } catch (err) {
+  //   console.log("--------------------------------")
+  console.log("--------------------------------")
+  console.log(err)
+  console.log("--------------------------------")
     if (err instanceof ApiError) {
       console.warn(err)
       res
@@ -32,7 +35,7 @@ const handleError = async (_, res, next) => {
         }
     }
 
-  }
+  // }
 }
 
 module.exports = {handleError}

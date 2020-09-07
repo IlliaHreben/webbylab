@@ -68,4 +68,4 @@ sequelize.sync({force: true})
   .catch(err => console.log('ERROR!!! ' + err.message))
 
 
-module.exports = { Films, Actors }
+module.exports = { Films, Actors, sequelize }
