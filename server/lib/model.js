@@ -22,7 +22,7 @@ const Films = sequelize.define('films', {
     unique: true
   },
   releaseDate: {
-    type: Sequelize.STRING,
+    type: Sequelize.INTEGER,
     allowNull: false
   },
   format: {
@@ -61,7 +61,7 @@ Actors.belongsToMany(Films, {
 
 
 // {force: true}
-sequelize.sync({force: false})
+sequelize.sync({force: true})
   .then(() => {
     console.log('Sucessfuly sync.')
   })
