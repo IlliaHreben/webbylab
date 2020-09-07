@@ -1,5 +1,6 @@
 const runService = require('../services/runService')
 const createFilm = runService(require('../services/films/create'))
+const deleteFilm = runService(require('../services/films/delete'))
 // const listActors = require('../services/films/list')
 
 const create = async (req, res) => {
@@ -14,5 +15,14 @@ const create = async (req, res) => {
 
 }
 
+const remove = async (req, res) => {
 
-module.exports = {create}
+  await deleteFilm(req.query)
+  res.send({
+    ok: true
+  })
+
+}
+
+
+module.exports = {create, remove}
