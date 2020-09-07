@@ -50,14 +50,8 @@ const Actors = sequelize.define('actors', {
 
 
 
-Films.belongsToMany(Actors, {
-  through: 'filmsActors',
-  onDelete: 'cascade'
-})
-Actors.belongsToMany(Films, {
-  through: 'filmsActors',
-  onDelete: 'cascade'
-})
+Films.belongsToMany(Actors, { through: 'filmsActors' })
+Actors.belongsToMany(Films, { through: 'filmsActors' })
 
 
 // {force: true}

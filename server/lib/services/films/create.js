@@ -4,14 +4,17 @@ const ApiError = require('../apiError')
 const { UniqueConstraintError,  } = require('sequelize')
 
 
-// const ApiError = require('../apiError')
-// const { UniqueConstraintError } = require('sequelize')
-
-// const validatorRules = {
-//   email: ['required', 'trim', 'email', 'to_lc'],
-//   name: [ 'required', 'string', { min_length: 2 } ],
-//   surname: [ 'required', 'string', { min_length: 2 } ]
-// }
+const validatorRules = {
+  name: [ 'required', 'string', { max_length: 90 } ],
+  releaseDate: ['required', 'integer'],
+  format: [ 'required', 'string', {'one_of': ['VHS', 'DVD', 'Blu-Ray']} ],
+  actorsList: [ 'required' , {
+    'list_of_objects': [{
+      name: ['required', 'string', { max_length: 90 } ],
+      surname: ['required', 'string', { max_length: 90 } ]
+    }]
+  }]
+}
 
 const execute = async ({name, releaseDate, format, actorsList}) => {
   try {
@@ -46,4 +49,4 @@ const execute = async ({name, releaseDate, format, actorsList}) => {
 
 }
 // validatorRules
-module.exports = {execute, }
+module.exports = {execute, validatorRules}
