@@ -58,7 +58,7 @@ class AddFilm extends Component {
           className='buttonAddForm'
           onClick={() => this.setState(({didRenderForm}) => ({didRenderForm: !didRenderForm}))}
         >Add film</button>
-        <Form handleSubmit={this.handleSubmit}/>
+        {this.state.didRenderForm && <Form handleSubmit={this.handleSubmit}/>}
       </>
     )
   }
@@ -100,7 +100,7 @@ class Form extends Component {
 
   render () {
     return (
-      <form>
+      <form className='addFilm'>
         <label>Film name</label>
         <input
           type="text" name="name"
@@ -131,7 +131,7 @@ class Form extends Component {
 
         <input
           type="submit"
-          value="Отправить"
+          value="Send"
           onClick={this.handleSubmitOnClick}/>
       </form>
     )
@@ -155,17 +155,31 @@ class AllFilms extends Component {
   }
 
   onClickShowFilms = () => {
-    this.setState({didRenderFilms: true})
+    this.setState(({didRenderFilms}) => ({didRenderFilms: !didRenderFilms}))
+  }
+
+  handleDeleteFilm = async id => {
+    const res = await handleApiResponse(
+      fetch(`/api/film?id=${id}`,{
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      })
+    )
+    console.log(res)
+    this.setState(({films}) => ({films: films.filter(film => film.id !== id)}))
   }
 
   render () {
     const didRenderFilms = this.state.didRenderFilms
     return (
-      <div>
-        <button onClick={this.onClickShowFilms}>Show all films</button>
-        {didRenderFilms && this.state.films.map(film => <FilmInfo key={film.id} {...film}/>)
-        }
-      </div>
+      <>
+        <button className='showFilms' onClick={this.onClickShowFilms}>Show all films</button>
+        <div className='allFilms'>
+          {didRenderFilms && this.state.films.map(film =>
+            <FilmInfo key={film.id} handleDelete={this.handleDeleteFilm} {...film}/>
+          )}
+        </div>
+      </>
     )
   }
 }
@@ -178,29 +192,73 @@ class FilmInfoRender extends Component {
     this.fetchFilmsOffer(this.props.id)
   }
 
+  componentDidUpdate (prevProps) {
+    if (prevProps !== this.props) this.fetchFilmsOffer(this.props.id)
+  }
+
   fetchFilmsOffer = async id => {
     const filmInfo = await handleApiResponse( fetch(`/api/film?id=${id}`) )
     this.setState({filmInfo})
   }
 
+  handleDeleteFilm = async id => {
+    await handleApiResponse(
+      fetch(`/api/film?id=${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      })
+    )
+    this.setState({filmInfo: null})
+  }
+
   render () {
     return (
-      this.state.filmInfo && <FilmInfo {...this.state.filmInfo}/>
+      this.state.filmInfo && <FilmInfo
+        handleDelete={this.handleDeleteFilm} {...this.state.filmInfo}
+      />
     )
   }
 }
 
-const FilmInfo = props => {
-  console.log(props)
-  const actors = props.actors.map(actor => `${actor.name} ${actor.surname}`).join(', ')
-  return (
-    <div className='filmInfo'>
-      <p>{props.name}</p>
-      <p>Actors: {actors}</p>
-      <p>Release year: {props.releaseYear}</p>
-      <p>Format: {props.format}</p>
-    </div>
-  )
+class FilmInfo extends Component {
+  state = { uncover: false, didRenderConfirm: false }
+
+  handleShow = () => {
+    this.setState(({uncover}) => ({uncover: !uncover}))
+  }
+
+  handleConfirm = () => {
+    this.setState(({didRenderConfirm}) => ({didRenderConfirm: !didRenderConfirm}))
+  }
+
+  render () {
+    const actors = this.props.actors.map(actor => `${actor.name} ${actor.surname}`).join(', ')
+    const uncover = this.state.uncover
+    return (
+      <div className='filmInfo'>
+        <div className='filmCaption'>
+          <div id='filmName' onClick={this.handleShow}>{this.props.name}</div>
+          {
+            !this.state.didRenderConfirm && <div
+              id='delete'
+              onClick={this.handleConfirm}
+            >delete</div>
+          }
+          {
+            this.state.didRenderConfirm && <div
+              id='delete'
+              onClick={() => this.props.handleDelete(this.props.id)}
+            >Sure?</div>
+          }
+        </div>
+        <div className='detailedInfo'>
+          {uncover && <p className='actors'>Actors: {actors}</p>}
+          {uncover && <p className='releaseYear'>Release year: {this.props.releaseYear}</p>}
+          {uncover && <p className='format'>Format: {this.props.format}</p>}
+        </div>
+      </div>
+    )
+  }
 }
 
 class SearchFilm extends Component {
@@ -235,8 +293,8 @@ class SearchFilm extends Component {
 //need optimization
   render () {
     return (
-      <>
-        <div>
+      <div className='header'>
+        <div className='headers'>
           <input
             onFocus={() => this.onFocus('filmName')}
             className='inputSearch'
@@ -250,7 +308,7 @@ class SearchFilm extends Component {
             && <SearchOffer films={this.state.filmsOffer} onClick={this.props.onOfferClick} />
           }
         </div>
-        <div>
+        <div className='headers'>
           <input
             onFocus={() => this.onFocus('actorName')}
             className='inputSearch'
@@ -265,7 +323,7 @@ class SearchFilm extends Component {
           }
         </div>
 
-      </>
+      </div>
     )
   }
 }
@@ -273,13 +331,15 @@ class SearchFilm extends Component {
 const SearchOffer = props => {
   // console.log(props)
   return (
-    props.films.map(film =>
-      <div
-        key={film.id}
-        className='filmOffer'
-        onClick={() => props.onClick(film.id)}
-      >{film.name}</div>
-    )
+    <div className='filmOffers'>
+      {props.films.map(film =>
+        <div
+          key={film.id}
+          className='filmOffer'
+          onClick={() => props.onClick(film.id)}
+        >{film.name}</div>
+      )}
+    </div>
   )
 }
 
