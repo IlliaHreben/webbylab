@@ -6,7 +6,7 @@ const { UniqueConstraintError,  } = require('sequelize')
 
 const validatorRules = {
   name: [ 'required', 'string', { max_length: 90 } ],
-  releaseDate: ['required', 'integer'],
+  releaseYear: ['required', { 'number_between': [1895, new Date().getFullYear()] }],
   format: [ 'required', 'string', {'one_of': ['VHS', 'DVD', 'Blu-Ray']} ],
   actorsList: [ 'required' , {
     'list_of_objects': [{
@@ -16,16 +16,12 @@ const validatorRules = {
   }]
 }
 
-const execute = async ({name, releaseDate, format, actorsList}) => {
+const execute = async ({actorsList, ...filmInformation}) => {
   try {
 
     const {film, actorsIds} = await sequelize.transaction(async t => {
 
-      const film = await Films.create({
-        name,
-        releaseDate,
-        format
-      }, {transaction: t})
+      const film = await Films.create(filmInformation, {transaction: t})
 
       const actors = await Actors.bulkCreate(actorsList, {
         updateOnDuplicate: ['name', 'surname'],

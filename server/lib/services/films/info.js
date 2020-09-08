@@ -9,24 +9,14 @@ const validatorRules = {
 }
 
 const execute = async ({id}) => {
-  try {
+  const film = await Films.findByPk(id, {
+    include: [{ model: Actors }]
+  })
 
-    const film = Films.findByPk(id, {
-      include: [{ model: Actors }]
-    })
-
-    if (film) {
-      return film
-    }
+  if (!film) {
     throw new ApiError({code: 'FILM_NOT_FOUND', message: 'Film not found'})
-
-  } catch (err) {
-    // if (err instanceof UniqueConstraintError) {
-    //   throw new ApiError({code: 'FILM_NOT_UNIQUE', message: 'Film already exist'})
-    // }
-    throw err
   }
-
+  return film
 }
 
 module.exports = {execute, validatorRules}

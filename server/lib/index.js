@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const asyncHandler = require('express-async-handler')
 
+const { syncModels } = require('./model')
 const controllers = require('./controllers')
 const {handleError} = require('./controllers/middleware')
 
@@ -15,8 +16,21 @@ const api = express.Router()
   .use(handleError)
 
 
-
 const app = express()
   .use(bodyParser.json())
   .use('/api', api)
-  .listen(4000)
+
+const listenPort = port => {
+  return new Promise((resolve, reject) => {
+    app.listen(port, err => {
+      err ? reject(err) : resolve()
+    })
+  })
+}
+
+const startApp = async port => {
+  await syncModels()
+  await listenPort(port)
+}
+
+startApp(4000)

@@ -21,7 +21,7 @@ const Films = sequelize.define('films', {
     allowNull: false,
     unique: true
   },
-  releaseDate: {
+  releaseYear: {
     type: Sequelize.INTEGER,
     allowNull: false
   },
@@ -54,12 +54,8 @@ Films.belongsToMany(Actors, { through: 'filmsActors' })
 Actors.belongsToMany(Films, { through: 'filmsActors' })
 
 
-// {force: true}
-sequelize.sync({force: true})
-  .then(() => {
-    console.log('Sucessfuly sync.')
-  })
-  .catch(err => console.log('ERROR!!! ' + err.message))
-
-
-module.exports = { Films, Actors, sequelize }
+const syncModels = async () => {
+  await sequelize.sync({force: true})
+  console.log('Sucessfuly sync.')
+}
+module.exports = { Films, Actors, sequelize, syncModels }

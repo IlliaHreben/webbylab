@@ -4,7 +4,7 @@ const ApiError = require('../services/apiError')
 const handleError = async (err, _, res, __) => {
 
     if (err instanceof ApiError) {
-      console.warn(err.message)
+      console.warn(err)
 
       res
         .status(400)

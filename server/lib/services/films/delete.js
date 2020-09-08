@@ -1,30 +1,19 @@
 const { Films } = require('../../model')
 
-// const ApiError = require('../apiError')
-// const { UniqueConstraintError,  } = require('sequelize')
-
+const ApiError = require('../apiError')
 
 const validatorRules = {
   id: [ 'required', 'integer' ]
 }
 
 const execute = async ({id}) => {
-  try {
+  const quantity = await Films.destroy({
+  where: {
+      id
+    }
+  })
 
-    Films.destroy({
-    where: {
-        id
-      }
-    })
-
-
-  } catch (err) {
-    // if (err instanceof UniqueConstraintError) {
-    //   throw new ApiError({code: 'FILM_NOT_UNIQUE', message: 'Film already exist'})
-    // }
-    throw err
-  }
-
+  if (!quantity) throw new ApiError({code: 'FILM_NOT_FOUND', message: 'No movie found for this ID'}) // quantity = 0
 }
 
 module.exports = {execute, validatorRules}
