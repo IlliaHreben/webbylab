@@ -50,12 +50,12 @@ const Actors = sequelize.define('actors', {
 
 
 
-Films.belongsToMany(Actors, { through: 'filmsActors' })
-Actors.belongsToMany(Films, { through: 'filmsActors' })
+Films.belongsToMany(Actors, { through: 'FilmsActors' })
+Actors.belongsToMany(Films, { through: 'FilmsActors' })
 
 
 const syncModels = async () => {
-  await sequelize.sync({force: true})
+  await sequelize.sync({force: false})
   console.log('Sucessfuly sync.')
 }
 module.exports = { Films, Actors, sequelize, syncModels }
