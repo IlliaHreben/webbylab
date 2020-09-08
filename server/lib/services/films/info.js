@@ -1,6 +1,6 @@
 const { Films, Actors } = require('../../model')
 
-// const ApiError = require('../apiError')
+const ApiError = require('../apiError')
 // const { UniqueConstraintError,  } = require('sequelize')
 
 
@@ -15,7 +15,10 @@ const execute = async ({id}) => {
       include: [{ model: Actors }]
     })
 
-    return film
+    if (film) {
+      return film
+    }
+    throw new ApiError({code: 'FILM_NOT_FOUND', message: 'Film not found'})
 
   } catch (err) {
     // if (err instanceof UniqueConstraintError) {

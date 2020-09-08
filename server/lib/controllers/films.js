@@ -7,7 +7,7 @@ const findFilm = runService(require('../services/films/findByName'))
 const findFilmsByActor = runService(require('../services/films/findByActor'))
 // const listActors = require('../services/films/list')
 
-const create = async (req, res) => {
+const create = async (req, res, next) => {
 
   const film = await createFilm(req.body)
   res.send({
@@ -16,7 +16,6 @@ const create = async (req, res) => {
       film
     }
   })
-
 }
 
 const remove = async (req, res) => {

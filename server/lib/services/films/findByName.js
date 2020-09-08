@@ -2,7 +2,7 @@ const { Films, Actors } = require('../../model')
 
 const { Op } = require('sequelize')
 
-// const ApiError = require('../apiError')
+const ApiError = require('../apiError')
 // const { UniqueConstraintError,  } = require('sequelize')
 
 
@@ -13,14 +13,17 @@ const validatorRules = {
 const execute = async ({ filmName }) => {
   try {
 
-    const film = Films.findOne({
+    const film = await Films.findOne({
       where: {
         name: { [Op.startsWith]: filmName }
       },
       include: [{ model: Actors }]
     })
 
-    return film
+    if (film) {
+      return film
+    }
+    throw new ApiError({code: 'FILM_NOT_FOUND', message: 'Film not found'})
 
   } catch (err) {
     // if (err instanceof UniqueConstraintError) {

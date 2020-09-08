@@ -1,4 +1,4 @@
-const { Films, Actors, sequelize } = require('../../model')
+const { Films } = require('../../model')
 
 // const ApiError = require('../apiError')
 // const { UniqueConstraintError,  } = require('sequelize')
@@ -26,5 +26,5 @@ const execute = async ({id}) => {
   }
 
 }
-// validatorRules
+
 module.exports = {execute, validatorRules}

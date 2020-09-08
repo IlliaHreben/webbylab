@@ -1,17 +1,18 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const asyncHandler = require('express-async-handler')
 
 const controllers = require('./controllers')
 const {handleError} = require('./controllers/middleware')
 
 const api = express.Router()
-  .use(handleError)
-  .post('/film', controllers.films.create)
-  .get('/film', controllers.films.info)
-  .delete('/film', controllers.films.remove)
-  .get('/films', controllers.films.getAll)
-  .get('/findFilm', controllers.films.findOne)
+  .post('/film', asyncHandler(controllers.films.create))
+  .get('/film', asyncHandler(controllers.films.info))
+  .delete('/film', asyncHandler(controllers.films.remove))
+  .get('/films', asyncHandler(controllers.films.getAll))
+  .get('/findFilm', asyncHandler(controllers.films.findOne))
   // .post('/importFilms', )
+  .use(handleError)
 
 
 

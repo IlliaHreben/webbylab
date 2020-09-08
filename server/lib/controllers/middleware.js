@@ -1,41 +1,32 @@
 const ApiError = require('../services/apiError')
+// const createError = require('http-errors')
 
-const handleError = async (err, _, res, next) => {
-  // try {
-  //   // console.log("--------------------------------")
-  //   await next()
-  //
-  // } catch (err) {
-  //   console.log("--------------------------------")
-  console.log("--------------------------------")
-  console.log(err)
-  console.log("--------------------------------")
+const handleError = async (err, _, res, __) => {
+
     if (err instanceof ApiError) {
-      console.warn(err)
+      console.warn(err.message)
+
       res
-        .status = 400
-        .send = {
+        .status(400)
+        .send({
           ok: false,
           error: {
             code: err.code,
             message: err.message
           }
-        }
+        })
     } else {
       console.error(err)
-      // console.log('-------------------------------------')
       res
-        .status = 500
-        .send = {
+        .status(500)
+        .send({
           ok: false,
           error: {
             code: 'UNKNOWN_ERROR',
             message: 'Unknown error'
           }
-        }
+        })
     }
-
-  // }
 }
 
 module.exports = {handleError}
