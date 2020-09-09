@@ -1,6 +1,6 @@
 const { Films } = require('../../model')
 
-const ApiError = require('../apiError')
+const ApiError = require('../ApiError')
 
 const validatorRules = {
   id: ['required', 'integer']

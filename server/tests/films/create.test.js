@@ -5,7 +5,7 @@ const requestBody = {
   name: 'Young Frankenstein',
   releaseYear: '1974',
   format: 'VHS',
-  actorsList: [
+  actors: [
     { name: 'Gene', surname: 'Wilder' },
     { name: 'Kenneth', surname: 'Mars' },
     { name: 'Terri', surname: 'Garr' },
@@ -28,7 +28,7 @@ test('Film added', async () => {
       filmId: expect.any(Number)
     }
   })
-  expect(body.data.actorsIds).toHaveLength(requestBody.actorsList.length)
+  expect(body.data.actorsIds).toHaveLength(requestBody.actors.length)
 })
 
 test('Film not unique', async () => {
@@ -47,10 +47,10 @@ describe.each([
   { ...requestBody, name: '' },
   { ...requestBody, releaseYear: null },
   { ...requestBody, format: '' },
-  { ...requestBody, actorsList: [] },
+  { ...requestBody, actors: [] },
   {
     ...requestBody,
-    actorsList: [
+    actors: [
       { name: '', surname: 'Wilder' },
       { name: 'Kenneth', surname: '' }
     ]

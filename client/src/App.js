@@ -84,7 +84,7 @@ class Form extends Component {
   }
 
   handleSubmitOnClick = () => {
-    const actorsList = this.state.actors
+    const actors = this.state.actors
       .split(', ')
       .map(actor => {
         const separatedActor = actor.split(' ')
@@ -96,7 +96,7 @@ class Form extends Component {
       name: this.state.name,
       releaseYear: this.state.releaseYear,
       format: this.state.format,
-      actorsList
+      actors
     })
   }
 

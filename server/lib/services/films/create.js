@@ -7,7 +7,7 @@ const validatorRules = {
   name: ['required', 'string', { max_length: 90 }],
   releaseYear: ['required', { number_between: [1895, new Date().getFullYear()] }],
   format: ['required', 'string', { one_of: ['VHS', 'DVD', 'Blu-Ray'] }],
-  actorsList: ['required', 'not_empty_list', {
+  actors: ['required', 'not_empty_list', {
     list_of_objects: [{
       name: ['required', 'string', { max_length: 90 }],
       surname: ['required', 'string', { max_length: 90 }]
@@ -15,16 +15,16 @@ const validatorRules = {
   }]
 }
 
-const execute = async ({ actorsList, ...filmInformation }) => {
+const execute = async ({ actors, ...filmInformation }) => {
   try {
     const { film, actorsIds } = await sequelize.transaction(async t => {
       const film = await Films.create(filmInformation, { transaction: t })
 
-      const actors = await Actors.bulkCreate(actorsList, {
+      const actorsInDb = await Actors.bulkCreate(actors, {
         updateOnDuplicate: ['name', 'surname'],
         transaction: t
       })
-      const actorsIds = actors.map(actor => actor.id)
+      const actorsIds = actorsInDb.map(actor => actor.id)
 
       await film.setActors(actorsIds, { transaction: t })
 

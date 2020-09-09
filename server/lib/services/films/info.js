@@ -1,7 +1,7 @@
 const { Films, Actors } = require('../../model')
 
-const ApiError = require('../apiError')
-// const { UniqueConstraintError,  } = require('sequelize')
+const ApiError = require('../ApiError')
+const formatFilm = require('./format')
 
 const validatorRules = {
   id: ['required', 'integer']
@@ -15,7 +15,7 @@ const execute = async ({ id }) => {
   if (!film) {
     throw new ApiError({ code: 'FILM_NOT_FOUND', message: 'Film not found' })
   }
-  return film
+  return formatFilm(film)
 }
 
 module.exports = { execute, validatorRules }

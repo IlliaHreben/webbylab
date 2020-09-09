@@ -27,7 +27,7 @@ const listenPort = port => {
 }
 
 const startApp = async port => {
-  await sequelize.sync({ force: false })
+  await sequelize.sync({ force: true })
   await listenPort(port)
   console.log('Succesfully started.')
 }

@@ -1,7 +1,8 @@
-
 const { Films, Actors } = require('../../model')
 
 const { Op } = require('sequelize')
+
+const formatFilm = require('./format')
 
 const validatorRules = {
   searchFilm: ['not_empty', 'string', { max_length: 90 }],
@@ -28,7 +29,7 @@ const execute = async filters => {
     limit: 10
   })
 
-  return films
+  return films.map(formatFilm)
 }
 
 module.exports = { execute, validatorRules }

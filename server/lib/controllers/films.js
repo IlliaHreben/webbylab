@@ -44,7 +44,7 @@ const importFilms = async (req, res) => {
   req.on('data', async chunk => {
     acc += chunk
     req.pause()
-    while (hasCompitedParts(acc)) {
+    while (hasComplitedParts(acc)) {
       const { firstChunkPart, rest } = splitFirstChunkPart(acc)
       acc = rest
       if (!firstChunkPart) continue
@@ -55,7 +55,7 @@ const importFilms = async (req, res) => {
 
   req.on('end', async () => {
     await processChunk(acc)
-    res.send({ ok: true, results })
+    res.send({ ok: true, data: results })
   })
 }
 
@@ -80,7 +80,7 @@ const splitFirstChunkPart = chunk => {
   return { firstChunkPart, rest }
 }
 
-const hasCompitedParts = acc => {
+const hasComplitedParts = acc => {
   return acc.includes('\n\n')
 }
 
@@ -103,7 +103,7 @@ const parsedPartToFilm = parsedPart => {
     name: parsedPart.Title,
     releaseYear: parsedPart['Release Year'],
     format: parsedPart.Format,
-    actorsList: (parsedPart.Stars || '')
+    actors: (parsedPart.Stars || '')
       .split(/,\s*/)
       .map(actor => {
         const [name, surname] = actor.split(' ')
