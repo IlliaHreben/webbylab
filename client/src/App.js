@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+import { Alert } from 'react-bootstrap'
 import './App.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 import debounce from 'lodash/debounce'
 
@@ -9,7 +11,8 @@ class App extends Component {
   state = {
     films: [],
     searchFilm: '',
-    searchActor: ''
+    searchActor: '',
+    error: null
   }
 
   async componentDidMount () {
@@ -24,7 +27,10 @@ class App extends Component {
       return
     }
     const films = await handleApiResponse( fetch(`/api/films?${key}=${value}`) )
-    this.setState({films, [key]: value})
+    films[0]
+    ? this.setState({films, [key]: value})
+    : this.setState({alert: 'PUSSY', films, [key]: value})
+    // this.setState({films, [key]: value})
   }
 
   handleForm = film => {
@@ -52,7 +58,15 @@ class App extends Component {
           handleForm={this.handleForm}
           handleSearch={this.handleSearch}
         />
-
+        {this.state.alert && <Alert variant="danger" >
+          <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+            <p>
+              Change this and that and try again. Duis mollis, est non commodo
+              luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.
+              Cras mattis consectetur purus sit amet fermentum.
+            </p>
+          </Alert>
+        }
       </>
     )
   }
