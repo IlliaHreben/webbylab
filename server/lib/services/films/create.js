@@ -1,6 +1,6 @@
 const { Films, Actors, sequelize } = require('../../model')
 
-const ApiError = require('../apiError')
+const ApiError = require('../ApiError')
 const { UniqueConstraintError,  } = require('sequelize')
 
 

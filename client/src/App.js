@@ -3,6 +3,8 @@ import './App.css'
 
 import debounce from 'lodash/debounce'
 
+import DropZone from './Components/DropZone'
+
 class App extends Component {
   state = {
     films: [],
@@ -100,40 +102,43 @@ class Form extends Component {
 
   render () {
     return (
-      <form className='addFilm'>
-        <label>Film name</label>
-        <input
-          type="text" name="name"
-          value={this.state.name}
-          onChange={this.handleInputChange}
-        />
+      <>
+        <form className='addFilm'>
+          <label>Film name</label>
+          <input
+            type="text" name="name"
+            value={this.state.name}
+            onChange={this.handleInputChange}
+          />
 
-        <label>Release year</label>
-        <input
-          type="text" name="releaseYear"
-          value={this.state.releaseYear}
-          onChange={this.handleInputChange}
-        />
+          <label>Release year</label>
+          <input
+            type="text" name="releaseYear"
+            value={this.state.releaseYear}
+            onChange={this.handleInputChange}
+          />
 
-        <label>Format</label>
-        <input
-          type="text" name="format"
-          value={this.state.format}
-          onChange={this.handleInputChange}
-        />
+          <label>Format</label>
+          <input
+            type="text" name="format"
+            value={this.state.format}
+            onChange={this.handleInputChange}
+          />
 
-        <label>Actors (comma separated)</label>
-        <input
-          type="text" name="actors"
-          value={this.state.actors}
-          onChange={this.handleInputChange}
-        />
+          <label>Actors (comma separated)</label>
+          <input
+            type="text" name="actors"
+            value={this.state.actors}
+            onChange={this.handleInputChange}
+          />
 
-        <input
-          type="submit"
-          value="Send"
-          onClick={this.handleSubmitOnClick}/>
-      </form>
+          <input
+            type="submit"
+            value="Send"
+            onClick={this.handleSubmitOnClick}/>
+        </form>
+        <DropZone />
+      </>
     )
   }
 

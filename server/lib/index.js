@@ -11,7 +11,7 @@ const api = express.Router()
   .get('/film', asyncHandler(controllers.films.info))
   .delete('/film', asyncHandler(controllers.films.remove))
   .get('/films', asyncHandler(controllers.films.findFilms))
-  // .post('/importFilms', )
+  .post('/importFilms', asyncHandler(controllers.films.importFilms))
   .use(handleError)
 
 
