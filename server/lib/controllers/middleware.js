@@ -1,5 +1,4 @@
-const ApiError = require('../services/apiError')
-// const createError = require('http-errors')
+const ApiError = require('../services/ApiError')
 
 const handleError = async (err, _, res, __) => {
 

@@ -3,11 +3,14 @@ const Sequelize = require('sequelize')
 const sequelize = new Sequelize(
   process.env.MYSQL_DATABASE,
   process.env.MYSQL_USER,
-  process.env.MYSQL_ROOT_PASSWORD, {
-  dialect: 'mysql',
-  host: 'localhost',
-  charset: 'utf8'
-})
+  process.env.MYSQL_ROOT_PASSWORD,
+  {
+    dialect: 'mysql',
+    host: 'localhost',
+    charset: 'utf8',
+    logging: process.env.DB_LOGGING ? console.log : false
+  }
+)
 
 const Films = sequelize.define('films', {
   id: {
@@ -54,8 +57,4 @@ Films.belongsToMany(Actors, { through: 'FilmsActors' })
 Actors.belongsToMany(Films, { through: 'FilmsActors' })
 
 
-const syncModels = async () => {
-  await sequelize.sync({force: true})
-  console.log('Sucessfuly sync.')
-}
-module.exports = { Films, Actors, sequelize, syncModels }
+module.exports = { Films, Actors, sequelize }

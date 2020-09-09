@@ -2,7 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const asyncHandler = require('express-async-handler')
 
-const { syncModels } = require('./model')
+const { sequelize } = require('./model')
 const controllers = require('./controllers')
 const {handleError} = require('./controllers/middleware')
 
@@ -28,7 +28,7 @@ const listenPort = port => {
 }
 
 const startApp = async port => {
-  await syncModels()
+  await sequelize.sync({force: false})
   await listenPort(port)
 }
 
