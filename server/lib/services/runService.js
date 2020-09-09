@@ -1,5 +1,5 @@
 const LIVR = require('./validator')
-const ApiError = require('./apiError')
+const ApiError = require('./ApiError')
 
 const runService = ({execute, validatorRules}) => {
   const validator = new LIVR.Validator(validatorRules)

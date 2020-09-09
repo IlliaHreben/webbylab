@@ -123,11 +123,11 @@ textarea:focus, input:focus, button:focus{
   padding: 0.5em;
   margin: 0.5em;
   border-radius: 0.5em;
+  box-shadow: -2px 2px 5px #47474782;
 }
 
 .addFilm input {
   box-sizing: border-box;
-  /* border-radius: 0.5em; */
   font-size: 1em;
   padding: 0.3em;
   border: none; border-bottom: 1px solid #5F5F5F;
@@ -137,4 +137,12 @@ textarea:focus, input:focus, button:focus{
 
 .addFilm label {
   margin-left: 0.5em;
+}
+
+.dropZone {
+  margin: 0.5em;
+  background-color: white;
+  border-radius: 0.5em;
+  height: 15em;
+  border: 2px dashed #5F5F5F;
 }
