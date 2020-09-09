@@ -51,10 +51,7 @@ const Actors = sequelize.define('actors', {
   }
 })
 
-
-
 Films.belongsToMany(Actors, { through: 'FilmsActors' })
 Actors.belongsToMany(Films, { through: 'FilmsActors' })
-
 
 module.exports = { Films, Actors, sequelize }

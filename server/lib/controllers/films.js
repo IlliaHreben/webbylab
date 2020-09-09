@@ -7,7 +7,6 @@ const listFilms = runService(require('../services/films/list'))
 const ApiError = require('../services/ApiError')
 
 const create = async (req, res) => {
-
   const film = await createFilm(req.body)
   res.send({
     ok: true,
@@ -16,42 +15,26 @@ const create = async (req, res) => {
 }
 
 const remove = async (req, res) => {
-
   await deleteFilm(req.query)
   res.send({
     ok: true
   })
-
 }
 
 const info = async (req, res) => {
-
   const film = await getInfoFilm(req.query)
   res.send({
     ok: true,
     data: film
   })
-
-}
-
-const getAll = async (_, res) => {
-
-  const films = await getFilms()
-  res.send({
-    ok: true,
-    data: films
-  })
-
 }
 
 const findFilms = async (req, res) => {
-
   const films = await listFilms(req.query)
   res.send({
     ok: true,
     data: films
   })
-
 }
 
 const importFilms = async (req, res) => {
@@ -65,31 +48,28 @@ const importFilms = async (req, res) => {
       const { firstChunkPart, rest } = splitFirstChunkPart(acc)
       acc = rest
       if (!firstChunkPart) continue
-      results.push( await processChunk(firstChunkPart) )
+      results.push(await processChunk(firstChunkPart))
     }
     req.resume()
-
   })
 
-
   req.on('end', async () => {
-    const promise = await processChunk(acc)
-    res.send({ok: true, results})
+    await processChunk(acc)
+    res.send({ ok: true, results })
   })
 }
 
 const processChunk = async complitedChunk => {
   try {
     const film = await createFilm(parsedPartToFilm(parseComplitedPart(complitedChunk)))
-    return {ok: true, film}
+    return { ok: true, film }
   } catch (error) {
     if (error instanceof ApiError) {
-      return { ok: false, error: {message: error.message, code: error.code} }
+      return { ok: false, error: { message: error.message, code: error.code } }
     }
     console.error(error)
-    return { ok: false, error: {message: 'Unknown error', code: 'UNKNOWN_ERROR'} }
+    return { ok: false, error: { message: 'Unknown error', code: 'UNKNOWN_ERROR' } }
   }
-
 }
 
 const splitFirstChunkPart = chunk => {
@@ -113,9 +93,9 @@ const parseComplitedPart = part => {
         return {}
       }
       const [, key, value] = matches
-      return {[key.trim()]: value.trim()}
+      return { [key.trim()]: value.trim() }
     })
-    .reduce((acc, value) => ({...acc, ...value}), {})
+    .reduce((acc, value) => ({ ...acc, ...value }), {})
 }
 
 const parsedPartToFilm = parsedPart => {
@@ -132,4 +112,4 @@ const parsedPartToFilm = parsedPart => {
   }
 }
 
-module.exports = {create, remove, info, getAll, findFilms, importFilms}
+module.exports = { create, remove, info, findFilms, importFilms }
