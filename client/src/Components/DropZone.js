@@ -11,28 +11,21 @@ export default function DropZone (props) {
   } = useDropzone({
     accept: 'text/plain',
     maxFiles: 1
-  });
+  })
 
-  const acceptedFileItems = acceptedFiles.map(async file => {
-    const films = await handleApiResponse( fetch(`/api/importFilms`, {
+  acceptedFiles.forEach(async file => {
+    await handleApiResponse( fetch(`/api/importFilms`, {
       method: 'POST',
       body: file
     }) )
-    return (
-    <li key={file.path}>
-      {file.path} - {file.size} bytes
-    </li>
-    )
+    props.handleSearch()
   })
 
   return (
-    <>
-      <div {...getRootProps({ className: 'dropZone' })}>
-        <input {...getInputProps()} />
-        <p>Drag 'n' drop some files here, or click to select files</p>
-        <em>(Only *.txt files will be accepted)</em>
-      </div>
-        <h4>{acceptedFileItems}</h4>
-    </>
+    <div {...getRootProps({ className: 'dropZone' })}>
+      <input {...getInputProps()} />
+      <p>Drag 'n' drop some files here, or click to select files</p>
+      <em>(Only *.txt files will be accepted)</em>
+    </div>
   )
 }
