@@ -14,12 +14,11 @@ const requestBody = {
   ]
 }
 
-beforeAll(() => sequelize.sync( {force: true} ))
+beforeAll(() => sequelize.sync({ force: true }))
 
 afterAll(() => sequelize.close())
 
 test('Film added', async () => {
-
   const body = await createFilm(requestBody)
 
   expect(body).toEqual({
@@ -44,11 +43,35 @@ test('Film not unique', async () => {
   })
 })
 
+describe.each([
+  { ...requestBody, name: '' },
+  { ...requestBody, releaseYear: null },
+  { ...requestBody, format: '' },
+  { ...requestBody, actorsList: [] },
+  {
+    ...requestBody,
+    actorsList: [
+      { name: '', surname: 'Wilder' },
+      { name: 'Kenneth', surname: '' }
+    ]
+  }
+])('should be invalid format', input => {
+  test('returns INVALID_FORMAT', async () => {
+    expect(await createFilm(input)).toEqual({
+      ok: false,
+      error: {
+        code: 'FORMAT_ERROR',
+        message: 'Invalid format'
+      }
+    })
+  })
+})
+
 const createFilm = async requestBody => {
   const result = await fetch('http://localhost:4000/api/film', {
     method: 'POST',
     body: JSON.stringify(requestBody),
-    headers: { 'Content-Type': 'application/json'}
+    headers: { 'Content-Type': 'application/json' }
   })
   const body = await result.json()
   return body

@@ -7,7 +7,7 @@ const validatorRules = {
   name: ['required', 'string', { max_length: 90 }],
   releaseYear: ['required', { number_between: [1895, new Date().getFullYear()] }],
   format: ['required', 'string', { one_of: ['VHS', 'DVD', 'Blu-Ray'] }],
-  actorsList: ['required', {
+  actorsList: ['required', 'not_empty_list', {
     list_of_objects: [{
       name: ['required', 'string', { max_length: 90 }],
       surname: ['required', 'string', { max_length: 90 }]
