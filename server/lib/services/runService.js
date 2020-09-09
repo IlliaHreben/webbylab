@@ -1,7 +1,7 @@
 const LIVR = require('./validator')
 const ApiError = require('./ApiError')
 
-const runService = ({execute, validatorRules}) => {
+const runService = ({ execute, validatorRules }) => {
   const validator = new LIVR.Validator(validatorRules)
 
   return input => {
@@ -9,7 +9,7 @@ const runService = ({execute, validatorRules}) => {
     const errors = validator.getErrors()
     if (errors) {
       console.log(errors)
-      throw new ApiError({code: 'FORMAT_ERROR', message: 'Invalid format'})
+      throw new ApiError({ code: 'FORMAT_ERROR', message: 'Invalid format' })
     }
     return execute(validData)
   }

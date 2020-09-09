@@ -4,7 +4,7 @@ const asyncHandler = require('express-async-handler')
 
 const { sequelize } = require('./model')
 const controllers = require('./controllers')
-const {handleError} = require('./controllers/middleware')
+const { handleError } = require('./controllers/middleware')
 
 const api = express.Router()
   .post('/film', asyncHandler(controllers.films.create))
@@ -13,7 +13,6 @@ const api = express.Router()
   .get('/films', asyncHandler(controllers.films.findFilms))
   .post('/importFilms', asyncHandler(controllers.films.importFilms))
   .use(handleError)
-
 
 const app = express()
   .use(bodyParser.json())
@@ -28,8 +27,9 @@ const listenPort = port => {
 }
 
 const startApp = async port => {
-  await sequelize.sync({force: false})
+  await sequelize.sync({ force: false })
   await listenPort(port)
+  console.log('Succesfully started.')
 }
 
 startApp(4000)
