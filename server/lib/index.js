@@ -1,10 +1,12 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const asyncHandler = require('express-async-handler')
+const serveStatic = require('serve-static')
 
 const { sequelize } = require('./model')
 const controllers = require('./controllers')
 const { handleError } = require('./controllers/middleware')
+const { app: config } = require('./config')
 
 const api = express.Router()
   .post('/film', asyncHandler(controllers.films.create))
@@ -15,6 +17,7 @@ const api = express.Router()
   .use(handleError)
 
 const app = express()
+  .use(serveStatic('../client/build', { extensions: ['html'] }))
   .use(bodyParser.json())
   .use('/api', api)
 
@@ -32,4 +35,4 @@ const startApp = async port => {
   console.log('Succesfully started.')
 }
 
-startApp(4000)
+startApp(config.port)

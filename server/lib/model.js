@@ -1,14 +1,16 @@
 const Sequelize = require('sequelize')
+const { db: config } = require('./config')
 
 const sequelize = new Sequelize(
-  process.env.MYSQL_DATABASE,
-  process.env.MYSQL_USER,
-  process.env.MYSQL_ROOT_PASSWORD,
+  config.name,
+  config.user,
+  config.password,
   {
     dialect: 'mysql',
-    host: 'localhost',
+    host: config.host,
+    port: config.port,
     charset: 'utf8',
-    logging: process.env.DB_LOGGING ? console.log : false
+    logging: config.logging ? console.log : false
   }
 )
 
