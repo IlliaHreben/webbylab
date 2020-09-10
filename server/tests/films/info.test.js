@@ -18,27 +18,51 @@ beforeAll(() => sequelize.sync({ force: true }))
 
 afterAll(() => sequelize.close())
 
-test('Film information about', async () => {
-  const bodyFilm = await createFilm(requestBody)
+describe('Checking information about film', () => {
+  test('True info', async () => {
+    const bodyFilm = await createFilm(requestBody)
 
-  expect(bodyFilm).toEqual({
-    ok: true,
-    data: {
-      actorsIds: expect.any(Array),
-      filmId: expect.any(Number)
-    }
+    expect(bodyFilm).toEqual({
+      ok: true,
+      data: {
+        actorsIds: expect.any(Array),
+        filmId: expect.any(Number)
+      }
+    })
+
+    const response = await getFilm(bodyFilm.data.filmId)
+    expect(response).toEqual({
+      ok: true,
+      data: {
+        name: requestBody.name,
+        releaseYear: requestBody.releaseYear,
+        format: requestBody.format,
+        actors: requestBody.actors.map((actor, i) => ({ id: bodyFilm.data.actorsIds[i], ...actor })),
+        id: bodyFilm.data.filmId
+      }
+    })
   })
 
-  const response = await getFilm(bodyFilm.data.filmId)
-  expect(response).toEqual({
-    ok: true,
-    data: {
-      name: requestBody.name,
-      releaseYear: requestBody.releaseYear,
-      format: requestBody.format,
-      actors: requestBody.actors.map((actor, i) => ({ id: bodyFilm.data.actorsIds[i], ...actor })),
-      id: bodyFilm.data.filmId
-    }
+  test('Checking id not number', async () => {
+    const response = await getFilm('string')
+    expect(response).toEqual({
+      ok: false,
+      error: {
+        code: 'FORMAT_ERROR',
+        message: 'Invalid format'
+      }
+    })
+  })
+
+  test('Checking wrong id', async () => {
+    const response = await getFilm(999)
+    expect(response).toEqual({
+      ok: false,
+      error: {
+        code: 'FILM_NOT_FOUND',
+        message: 'Film not found'
+      }
+    })
   })
 })
 
