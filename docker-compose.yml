@@ -8,6 +8,7 @@ x-mysql-config: &mysqlConfig
 
 services:
   app:
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
