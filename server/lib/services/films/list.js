@@ -5,11 +5,17 @@ const { Op } = require('sequelize')
 const formatFilm = require('./format')
 
 const validatorRules = {
+  page: 'page_number',
+  size: 'page_size',
   searchFilm: ['not_empty', 'shortly_text'],
   searchActor: ['not_empty', 'shortly_text']
 }
 
 const execute = async filters => {
+  const offset = filters.page * filters.size - filters.size
+  const limit = filters.size
+  console.log(offset, limit)
+
   const filmsWhere = filters.searchFilm ? { name: { [Op.startsWith]: filters.searchFilm } } : {}
   const actorsWhere = filters.searchActor ? {
     [Op.or]: {
@@ -25,12 +31,15 @@ const execute = async filters => {
       model: Actors,
       where: actorsWhere
     }],
-    order: [['name', 'ASC'], [Actors, 'name', 'ASC'], [Actors, 'surname', 'ASC']],
-    offset: 0,
-    limit: 100
+    offset,
+    limit,
+    order: [['name', 'ASC'], [Actors, 'name', 'ASC'], [Actors, 'surname', 'ASC']]
   })
-  console.log('Count:', count, films.length)
-  return films.map(formatFilm)
+
+  return {
+    films: films.map(formatFilm),
+    pagination: { size: filters.size, pages: Math.ceil(count / filters.size) }
+  }
 }
 
 module.exports = { execute, validatorRules }

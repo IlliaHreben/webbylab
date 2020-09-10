@@ -1,5 +1,5 @@
-textarea:focus, input:focus, button:focus{
-    outline: none;
+textarea:focus, input:focus, button:focus, div:focus {
+  outline: none;
 }
 
 .header {
@@ -78,6 +78,7 @@ textarea:focus, input:focus, button:focus{
   border-radius: 0.5em;
   background-color: white;
   margin: 0.5em;
+  padding-bottom: 0.1em;
 }
 
 .allFilms .filmInfo {

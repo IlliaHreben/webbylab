@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { Alert } from 'react-bootstrap'
-import './App.css'
+import { Alert, Pagination, Button } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import './App.css'
 
 import debounce from 'lodash/debounce'
 
@@ -12,25 +12,27 @@ class App extends Component {
     films: [],
     searchFilm: '',
     searchActor: '',
+    pagination: {},
     error: null
   }
 
   async componentDidMount () {
-    const films = await handleApiResponse( fetch('/api/films') )
-    this.setState({films})
+    await this.fetchFilms()
+  }
+
+  fetchFilms = async (query = '') => {
+    const {films, pagination } = await handleApiResponse( fetch('/api/films' + query) )
+    this.setState({ films, pagination })
   }
 
   handleSearch = async (key, value) => {
     if (!value && value === '') {
-      const films = await handleApiResponse( fetch('/api/films') )
-      this.setState({films, [key]: value})
+      const { films, pagination } = await handleApiResponse( fetch('/api/films') )
+      this.setState({films, pagination, [key]: value})
       return
     }
-    const films = await handleApiResponse( fetch(`/api/films?${key}=${value}`) )
-    films[0]
-    ? this.setState({films, [key]: value})
-    : this.setState({alert: 'PUSSY', films, [key]: value})
-    // this.setState({films, [key]: value})
+    const { films, pagination } = await handleApiResponse( fetch(`/api/films?${key}=${value}`) )
+    this.setState({ films, pagination, [key]: value })
   }
 
   handleForm = film => {
@@ -39,6 +41,11 @@ class App extends Component {
 
   handleDelete = id => {
     this.setState(({films}) => ({films: films.filter(film => film.id !== id)}))
+  }
+
+  handlePage = async page => {
+    console.log('_____________________-')
+    await this.fetchFilms(`?page=${page}`)
   }
 
   render () {
@@ -53,6 +60,8 @@ class App extends Component {
         <AllFilms
           films={this.state.films}
           handleDelete={this.handleDelete}
+          pagination={this.state.pagination}
+          handlePage={this.handlePage}
         />
         <AddFilm
           handleForm={this.handleForm}
@@ -95,10 +104,11 @@ class AddFilm extends Component {
   render () {
     return (
       <>
-        <button
-          className='buttonAddForm'
+        <Button
+          variant='dark'
           onClick={() => this.setState(({didRenderForm}) => ({didRenderForm: !didRenderForm}))}
-        >Add film</button>
+          block
+        >Add film</Button>
         {this.state.didRenderForm && <Form handleSubmit={this.handleSubmit}/>}
         {this.state.didRenderForm && <DropZone handleSearch={this.handleSearch}/>}
       </>
@@ -171,10 +181,12 @@ class Form extends Component {
           onChange={this.handleInputChange}
         />
 
-        <input
+        <Button
           type="submit"
-          value="Send"
-          onClick={this.handleSubmitOnClick}/>
+          variant='dark'
+          onClick={this.handleSubmitOnClick}
+          block
+        >Send</Button>
       </form>
     )
   }
@@ -182,6 +194,10 @@ class Form extends Component {
 }
 
 class AllFilms extends Component {
+  state = {
+    pageNumbers: [],
+    activePage: 1
+  }
 
   handleDeleteFilm = async id => {
     const res = await handleApiResponse(
@@ -193,12 +209,40 @@ class AllFilms extends Component {
     this.props.handleDelete(id)
   }
 
+  componentDidUpdate (prevProps) {
+    if (prevProps !== this.props) {
+      const stupidArr = []
+      for (let i = 1; i <= this.props.pagination.pages; i++) { // такой херни я еще не писал
+        stupidArr.push(i)
+      }
+      this.setState({pageNumbers: stupidArr})
+    }
+
+  }
+
+  changeActivePage = page => {
+    this.props.handlePage(page)
+    this.setState({activePage: page})
+  }
+
   render () {
+    console.log(this.props)
     return (
       <div className='allFilms'>
         {this.props.films.map(film =>
           <FilmInfo key={film.id} handleDelete={this.handleDeleteFilm} {...film}/>
         )}
+        <Pagination className='justify-content-center'>
+          {this.state.pageNumbers.map(pNum =>
+            <Pagination.Item
+              variant='secondary'
+              active={pNum === this.state.activePage}
+              key={pNum}
+              onClick={() => this.changeActivePage(pNum)}
+              style={{'color': 'white'}}
+            >{pNum}</Pagination.Item>)
+          }
+        </Pagination>
       </div>
     )
   }

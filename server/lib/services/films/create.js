@@ -41,7 +41,6 @@ const execute = async ({ actors, ...filmInformation }) => {
     return { filmId: film.id, actorsIds }
   } catch (err) {
     if (err instanceof UniqueConstraintError) {
-      console.log(err)
       throw new ApiError({ code: 'FILM_NOT_UNIQUE', message: 'Film already exist' })
     }
     throw err
