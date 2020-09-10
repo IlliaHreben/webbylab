@@ -1,12 +1,26 @@
-version: '3.3'
+version: '3.4'
+
+x-mysql-config: &mysqlConfig
+  MYSQL_ROOT_PASSWORD: webbylab
+  MYSQL_DATABASE: webbylab
+  MYSQL_USER: webbylab
+  MYSQL_PASSWORD: webbylab
 
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      <<: *mysqlConfig
+      APP_DB_HOST: db
+      APP_PORT: 3000
+      APP_DB_PORT: 3306
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
   db:
     image: mysql:5.7
-    ports:
-      - 3306:3306
     environment:
-      MYSQL_ROOT_PASSWORD: webbylab
-      MYSQL_DATABASE: webbylab
-      MYSQL_USER: webbylab
-      MYSQL_PASSWORD: webbylab
+      <<: *mysqlConfig
