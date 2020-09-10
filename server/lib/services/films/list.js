@@ -5,8 +5,8 @@ const { Op } = require('sequelize')
 const formatFilm = require('./format')
 
 const validatorRules = {
-  searchFilm: ['not_empty', 'string', { max_length: 90 }],
-  searchActor: ['not_empty', 'string', { max_length: 90 }]
+  searchFilm: ['not_empty', 'shortly_text'],
+  searchActor: ['not_empty', 'shortly_text']
 }
 
 const execute = async filters => {
@@ -18,17 +18,18 @@ const execute = async filters => {
     }
   } : {}
 
-  const films = await Films.findAll({
+  const { rows: films, count } = await Films.findAndCountAll({
     where: filmsWhere,
+    distinct: true,
     include: [{
       model: Actors,
       where: actorsWhere
-      // required: false
     }],
-    order: [['name', 'ASC']],
-    limit: 10
+    order: [['name', 'ASC'], [Actors, 'name', 'ASC'], [Actors, 'surname', 'ASC']],
+    offset: 0,
+    limit: 100
   })
-
+  console.log('Count:', count, films.length)
   return films.map(formatFilm)
 }
 

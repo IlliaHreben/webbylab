@@ -30,7 +30,6 @@ test('Film delete', async () => {
   })
 
   const filmId = await deleteFilm('?id=1')
-  console.log(filmId)
   expect(filmId).toEqual({ ok: true })
 })
 

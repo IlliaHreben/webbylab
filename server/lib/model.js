@@ -23,8 +23,7 @@ const Films = sequelize.define('films', {
   },
   name: {
     type: Sequelize.STRING,
-    allowNull: false,
-    unique: true
+    allowNull: false
   },
   releaseYear: {
     type: Sequelize.INTEGER,
@@ -34,6 +33,15 @@ const Films = sequelize.define('films', {
     type: Sequelize.STRING,
     allowNull: false
   }
+}, {
+  indexes: [
+    {
+      unique: true,
+      fields: ['name', 'releaseYear']
+    }, {
+      fields: ['name']
+    }
+  ]
 })
 
 const Actors = sequelize.define('actors', {
@@ -51,6 +59,17 @@ const Actors = sequelize.define('actors', {
     type: Sequelize.STRING,
     allowNull: false
   }
+}, {
+  indexes: [
+    {
+      unique: true,
+      fields: ['name', 'surname']
+    }, {
+      fields: ['name']
+    }, {
+      fields: ['surname']
+    }
+  ]
 })
 
 Films.belongsToMany(Actors, { through: 'FilmsActors' })

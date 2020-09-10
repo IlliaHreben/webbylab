@@ -3,7 +3,7 @@ const { sequelize } = require('../../lib/model')
 
 const requestBody = {
   name: 'Young Frankenstein',
-  releaseYear: '1974',
+  releaseYear: 1974,
   format: 'VHS',
   actors: [
     { name: 'Gene', surname: 'Wilder' },
@@ -39,6 +39,30 @@ test('Film not unique', async () => {
     error: {
       code: 'FILM_NOT_UNIQUE',
       message: 'Film already exist'
+    }
+  })
+})
+
+test('Film create, but with different release year and same name', async () => {
+  const body = await createFilm({ ...requestBody, releaseYear: requestBody.releaseYear + 1 })
+
+  expect(body).toEqual({
+    ok: true,
+    data: {
+      actorsIds: expect.any(Array),
+      filmId: expect.any(Number)
+    }
+  })
+})
+
+test('Film create, but with same release year and different name', async () => {
+  const body = await createFilm({ ...requestBody, name: requestBody.name + 'string' })
+
+  expect(body).toEqual({
+    ok: true,
+    data: {
+      actorsIds: expect.any(Array),
+      filmId: expect.any(Number)
     }
   })
 })
