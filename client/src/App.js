@@ -1,7 +1,11 @@
 import React, { Component, Fragment } from 'react'
-import { Alert, Pagination, Button, Form as BForm, Col } from 'react-bootstrap'
+import { Alert as BAlert, Pagination, Button, Form as BForm, Col } from 'react-bootstrap'
+import { Snackbar} from '@material-ui/core'
+import MuiAlert from '@material-ui/lab/Alert'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
+import 'fontsource-roboto'
+import '@material-ui/styles'
 
 import debounce from 'lodash/debounce'
 
@@ -82,26 +86,31 @@ class App extends Component {
           handleSearch={this.handleSearch}
           handleError={this.handleError}
         />
-        {error && <Alert variant="danger" onClose={() => this.setState({error: null})} dismissible>
-          <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
-            <p>
-              It seems to me that you are starting to test me. Not worth it.
-              My author is a backend developer. Better go talk to the server.
-              <hr />
-              CODE: {error.code}. Message: {error.message}.
-            </p>
+        <Snackbar
+          open={!!error}
+          autoHideDuration={3000}
+          onClose={() => this.setState({error: null})}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert severity='error'>
+            {error ? error.message : null}
           </Alert>
-        }
+        </Snackbar>
       </>
     )
   }
+}
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />
 }
 
 class AddFilm extends Component {
   state = {
     didRenderForm: false,
     createdFilmsCount: null,
-    notCreatedFilmsCount: null
+    notCreatedFilmsCount: null,
+    didRenderSuccesMessage: false
   }
 
   handleSubmit = async film => {
@@ -112,6 +121,7 @@ class AddFilm extends Component {
         headers: { 'Content-Type': 'application/json' }
       }) )
       this.props.handleSearch()
+      this.setState({didRenderSuccesMessage: true})
     } catch (error) {
       this.props.handleError(error)
     }
@@ -162,7 +172,7 @@ class AddFilm extends Component {
         />
         <ModalPortal
           show={!createdFilmsCount && notCreatedFilmsCount}
-          title={<p style={{color: 'red', margin: 0}}>You're file is broken!"</p>}
+          title={<p style={{color: 'red', margin: 0}}>You're file is broken, or all films are already yet.</p>}
           body={<p style={{margin: 0}}>The file you want to download does not contain movies, or they are not in the correct format.<br/>
                 The correct format is:<br/>
                 <b>Name:</b> name,<br/>
@@ -179,6 +189,16 @@ class AddFilm extends Component {
                 Unloaded movies count: <b>{notCreatedFilmsCount}</b>.</p>}
           handleClose={this.handleCloseModal}
         />
+        <Snackbar
+          open={this.state.didRenderSuccesMessage}
+          autoHideDuration={3000}
+          onClose={() => this.setState({didRenderSuccesMessage: false})}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert severity='success'>
+            The film was successfully created!
+          </Alert>
+        </Snackbar>
       </>
     )
   }
@@ -336,9 +356,9 @@ class AllFilms extends Component {
     return (
       <div className='allFilms'>
         {!this.props.films.length &&
-          <Alert variant='light' style={{margin: '0.1em', marginBottom: '-1em', textAlign: 'center'}}>
+          <BAlert variant='light' style={{margin: '0.1em', marginBottom: '-1em', textAlign: 'center'}}>
             No movies found. Please add a new movie or change your search parameters.
-          </Alert>
+          </BAlert>
         }
         {this.props.films.map(film =>
           <FilmInfo
