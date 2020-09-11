@@ -177,6 +177,13 @@ class Form extends Component {
       format: this.state.format,
       actors
     })
+
+    this.setState({
+      name: '',
+      releaseYear: '',
+      format: '',
+      actors: ''
+    })
   }
 
   render () {
