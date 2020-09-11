@@ -21,19 +21,22 @@ class App extends Component {
     await this.fetchFilms()
   }
 
-  fetchFilms = async (query = '') => {
-    const {films, pagination } = await handleApiResponse( fetch('/api/films' + query) )
+  fetchFilms = async (query = {}) => {
+    console.log(query)
+    const searchParams = new URLSearchParams()
+    if (query.page) searchParams.set('page', query.page)
+    if (query.searchFilm) searchParams.set('searchFilm', query.searchFilm)
+    if (query.searchActor) searchParams.set('searchActor', query.searchActor)
+
+    const {films, pagination } = await handleApiResponse( fetch('/api/films?' + searchParams.toString()) )
     this.setState({ films, pagination })
   }
 
-  handleSearch = async (key, value) => {
-    if (!value && value === '') {
-      const { films, pagination } = await handleApiResponse( fetch('/api/films') )
-      this.setState({films, pagination, [key]: value})
-      return
-    }
-    const { films, pagination } = await handleApiResponse( fetch(`/api/films?${key}=${value}`) )
-    this.setState({ films, pagination, [key]: value })
+  handleSearch = async query => {
+    this.setState(({
+      pagination: {},
+      ...query
+    }), () => this.fetchFilms(query))
   }
 
   handleForm = film => {
@@ -49,7 +52,7 @@ class App extends Component {
   }
 
   handlePage = async page => {
-    await this.fetchFilms(`?page=${page}`)
+    await this.fetchFilms({page})
   }
 
   render () {
@@ -302,7 +305,7 @@ class FilmInfo extends Component {
 
     const [, filmNameFirstPart, filmNameSecondPart] = props.name.match(
       new RegExp(`^(${props.searchFilm})(.*)`, 'i')
-    )
+    ) || [ '', '', props.name]
 
     const foundedActors = props.searchActor
     ? props.actors
@@ -346,7 +349,7 @@ class SearchFilm extends Component {
   }
 
   fetchFilms = debounce(async (value, key) => {
-    this.props.handleSearch(key, value)
+    this.props.handleSearch({[key]:value})
   }, 600)
 
 //need optimization
