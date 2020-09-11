@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { Alert, Pagination, Button, Form as BForm, Col, } from 'react-bootstrap'
+import { Alert, Pagination, Button, Form as BForm, Col } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
 
@@ -40,10 +40,6 @@ class App extends Component {
   }
 
   debouncedFetch = debounce( this.fetchFilms, 600)
-
-  handleForm = film => {
-    this.setState(({films}) => ({films: films.concat(film) }) )
-  }
 
   handleDelete = id => {
     this.setState(({films}) => ({films: films.filter(film => film.id !== id)}))
@@ -107,12 +103,12 @@ class AddFilm extends Component {
 
   handleSubmit = async film => {
     try {
-      const filmId = await handleApiResponse( fetch(`/api/film`, {
+      await handleApiResponse( fetch(`/api/film`, {
         method: 'POST',
         body: JSON.stringify(film),
         headers: { 'Content-Type': 'application/json' }
       }) )
-      this.props.handleForm({id: filmId, ...film})
+      this.props.handleSearch()
     } catch (error) {
       this.props.handleError(error)
     }
@@ -195,7 +191,6 @@ class Form extends Component {
 
         <label>Release year</label>
         <input
-          // type='date'
           type='number'
           name='releaseYear'
           value={this.state.releaseYear}
