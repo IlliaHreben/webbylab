@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Alert, Pagination, Button } from 'react-bootstrap'
+import { Alert, Pagination, Button, Form as BForm, Col } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
 
@@ -43,12 +43,17 @@ class App extends Component {
     this.setState(({films}) => ({films: films.filter(film => film.id !== id)}))
   }
 
+  handleError = error => {
+    this.setState({error})
+  }
+
   handlePage = async page => {
-    console.log('_____________________-')
     await this.fetchFilms(`?page=${page}`)
   }
 
   render () {
+    const error = this.state.error
+
     return (
       <>
         <SearchFilm
@@ -62,17 +67,20 @@ class App extends Component {
           handleDelete={this.handleDelete}
           pagination={this.state.pagination}
           handlePage={this.handlePage}
+          handleError={this.handleError}
         />
         <AddFilm
           handleForm={this.handleForm}
           handleSearch={this.handleSearch}
+          handleError={this.handleError}
         />
-        {this.state.alert && <Alert variant="danger" >
+        {error && <Alert variant="danger" onClose={() => this.setState({error: null})} dismissible>
           <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
             <p>
-              Change this and that and try again. Duis mollis, est non commodo
-              luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.
-              Cras mattis consectetur purus sit amet fermentum.
+              It seems to me that you are starting to test me. Not worth it.
+              My author is a backend developer. Better go talk to the server.
+              <hr />
+              CODE: {error.code}. Message: {error.message}.
             </p>
           </Alert>
         }
@@ -87,13 +95,16 @@ class AddFilm extends Component {
   }
 
   handleSubmit = async film => {
-    const filmId = await handleApiResponse( fetch(`/api/film`, {
-      method: 'POST',
-      body: JSON.stringify(film),
-      headers: { 'Content-Type': 'application/json' }
-    }) )
-
-    this.props.handleForm({id: filmId, ...film})
+    try {
+      const filmId = await handleApiResponse( fetch(`/api/film`, {
+        method: 'POST',
+        body: JSON.stringify(film),
+        headers: { 'Content-Type': 'application/json' }
+      }) )
+      this.props.handleForm({id: filmId, ...film})
+    } catch (error) {
+      this.props.handleError(error)
+    }
   }
 
   handleSearch = () => {
@@ -102,6 +113,9 @@ class AddFilm extends Component {
   }
 
   render () {
+    const handleError = this.props.handleError
+    const didRenderForm = this.state.didRenderForm
+
     return (
       <>
         <Button
@@ -109,8 +123,10 @@ class AddFilm extends Component {
           onClick={() => this.setState(({didRenderForm}) => ({didRenderForm: !didRenderForm}))}
           block
         >Add film</Button>
-        {this.state.didRenderForm && <Form handleSubmit={this.handleSubmit}/>}
-        {this.state.didRenderForm && <DropZone handleSearch={this.handleSearch}/>}
+        {didRenderForm && <Form handleSubmit={this.handleSubmit}/>}
+        {didRenderForm &&
+          <DropZone handleSearch={this.handleSearch} handleError={handleError}/>
+        }
       </>
     )
   }
@@ -182,7 +198,7 @@ class Form extends Component {
         />
 
         <Button
-          type="submit"
+          // type="submit"
           variant='dark'
           onClick={this.handleSubmitOnClick}
           block
@@ -200,13 +216,17 @@ class AllFilms extends Component {
   }
 
   handleDeleteFilm = async id => {
-    const res = await handleApiResponse(
-      fetch(`/api/film?id=${id}`,{
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
-      })
-    )
-    this.props.handleDelete(id)
+    try {
+      await handleApiResponse(
+        fetch(`/api/film?id=${id}`,{
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' }
+        })
+      )
+      this.props.handleDelete(id)
+    } catch (error) {
+      this.props.handleError(error)
+    }
   }
 
   componentDidUpdate (prevProps) {
@@ -226,13 +246,22 @@ class AllFilms extends Component {
   }
 
   render () {
-    console.log(this.props)
     return (
       <div className='allFilms'>
+        {!this.props.films.length &&
+          <Alert variant='light' style={{margin: '0.1em', marginBottom: '-1em', textAlign: 'center'}}>
+            No movies found. Please add a new movie or change your search parameters.
+          </Alert>
+        }
         {this.props.films.map(film =>
-          <FilmInfo key={film.id} handleDelete={this.handleDeleteFilm} {...film}/>
+          <FilmInfo
+            key={film.id}
+            handleError={this.handleError}
+            handleDelete={this.handleDeleteFilm}
+            {...film}
+          />
         )}
-        <Pagination className='justify-content-center'>
+        <Pagination className='justify-content-center blue'>
           {this.state.pageNumbers.map(pNum =>
             <Pagination.Item
               variant='secondary'
@@ -249,7 +278,10 @@ class AllFilms extends Component {
 }
 
 class FilmInfo extends Component {
-  state = { uncover: false, didRenderConfirm: false }
+  state = {
+    uncover: false,
+    didRenderConfirm: false
+  }
 
   handleShow = () => {
     this.setState(({uncover}) => ({uncover: !uncover}))
@@ -302,22 +334,28 @@ class SearchFilm extends Component {
 //need optimization
   render () {
     return (
-      <div className='header'>
-        <input
-          className='inputSearch'
-          type='text'
-          value={this.props.filmSearch}
-          onChange={e => this.onInputChange(e, 'searchFilm')}
-          autoComplete='off'
-        />
-        <input
-          className='inputSearch'
-          type='text'
-          value={this.props.actorSearch}
-          onChange={e => this.onInputChange(e, 'searchActor')}
-          autoComplete='off'
-        />
-      </div>
+      <BForm>
+        <BForm.Row>
+          <Col>
+            <BForm.Control
+              className='bForm'
+              placeholder="Film name"
+              value={this.props.filmSearch}
+              onChange={e => this.onInputChange(e, 'searchFilm')}
+              autoComplete='off'
+            />
+          </Col>
+          <Col>
+            <BForm.Control
+              className='bForm'
+              placeholder="Actor name or surname"
+              value={this.props.actorSearch}
+              onChange={e => this.onInputChange(e, 'searchActor')}
+              autoComplete='off'
+            />
+          </Col>
+        </BForm.Row>
+      </BForm>
     )
   }
 }
