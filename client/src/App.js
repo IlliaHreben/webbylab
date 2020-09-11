@@ -1,4 +1,4 @@
-import React, { Component, } from 'react'
+import React, { Component, Fragment } from 'react'
 import { Alert, Pagination, Button, Form as BForm, Col } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
@@ -295,13 +295,28 @@ class FilmInfo extends Component {
   }
 
   render () {
-    const actors = this.props.actors.map(actor => `${actor.name} ${actor.surname}`).join(', ')
+    const props = this.props
+
+    const actors = props.actors.map(actor => `${actor.name} ${actor.surname}`).join(', ')
     const uncover = this.state.uncover
 
-    const [, filmNameFirstPart, filmNameSecondPart] = this.props.name.match(
-      new RegExp(`^(${this.props.searchFilm})(.*)`, 'i')
+    const [, filmNameFirstPart, filmNameSecondPart] = props.name.match(
+      new RegExp(`^(${props.searchFilm})(.*)`, 'i')
     )
 
+    const foundedActors = props.searchActor
+    ? props.actors
+      .filter(({name, surname}) => name.startsWith(props.searchActor) || surname.startsWith(props.searchActor))
+      .map(({id, name, surname}, i, arr) => {
+        const regexp = new RegExp(`^(${this.props.searchActor})(.*)`, 'i')
+
+        const [, actorNameFirstPart, actorNameSecondPart] = name.match(regexp) || [ '', '', name ]
+        const [, actorSurnameFirstPart, actorSurnameSecondPart] = surname.match(regexp) || [ '', '', surname ]
+
+        const separartor = !(i === arr.length - 1)
+        return (<Fragment key={id}><b>{actorNameFirstPart}</b>{actorNameSecondPart} <b>{actorSurnameFirstPart}</b>{actorSurnameSecondPart}{separartor && ',  '}</Fragment>)
+      })
+    : null
 
     return (
       <div className='filmInfo'>
@@ -309,6 +324,9 @@ class FilmInfo extends Component {
           <div id='filmName' onClick={this.handleShow}>
             <b>{filmNameFirstPart}</b>{filmNameSecondPart}
           </div>
+          <div
+            className='searchActorName'
+          ><p>{foundedActors}</p></div>
           <DeleteButton id={this.props.id} handleDelete={this.props.handleDelete}/>
         </div>
         <div className='detailedInfo'>

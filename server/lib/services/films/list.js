@@ -7,8 +7,8 @@ const formatFilm = require('./format')
 const validatorRules = {
   page: 'page_number',
   size: 'page_size',
-  searchFilm: ['not_empty', 'shortly_text'],
-  searchActor: ['not_empty', 'shortly_text']
+  searchFilm: 'shortly_text',
+  searchActor: 'shortly_text'
 }
 
 const execute = async filters => {

@@ -75,12 +75,28 @@ body {
 }
 
 .filmCaption #filmName {
-  flex-grow: 20;
+  flex-grow: 3;
   text-transform: uppercase;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.searchActorName {
+  flex-grow: 2;
+  text-align: right;
+  margin-right: 0.3em;
+  display: flex;
+  white-space: nowrap;
+}
+
+.searchActorName p {
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .filmCaption #delete {
-  flex-grow: 2;
+  flex-grow: 1;
   text-align: center;
   background-color: #D5D4D4;
   border-radius: 0.1em;
