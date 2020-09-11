@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, } from 'react'
 import { Alert, Pagination, Button, Form as BForm, Col } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
@@ -6,6 +6,7 @@ import './App.css'
 import debounce from 'lodash/debounce'
 
 import DropZone from './Components/DropZone'
+import DeleteButton from './Components/DeleteButton'
 
 class App extends Component {
   state = {
@@ -282,8 +283,7 @@ class AllFilms extends Component {
 
 class FilmInfo extends Component {
   state = {
-    uncover: false,
-    didRenderConfirm: false
+    uncover: false
   }
 
   handleShow = () => {
@@ -309,18 +309,7 @@ class FilmInfo extends Component {
           <div id='filmName' onClick={this.handleShow}>
             <b>{filmNameFirstPart}</b>{filmNameSecondPart}
           </div>
-          {
-            !this.state.didRenderConfirm && <div
-              id='delete'
-              onClick={this.handleConfirm}
-            >delete</div>
-          }
-          {
-            this.state.didRenderConfirm && <div
-              id='delete'
-              onClick={() => this.props.handleDelete(this.props.id)}
-            >Sure?</div>
-          }
+          <DeleteButton id={this.props.id} handleDelete={this.props.handleDelete}/>
         </div>
         <div className='detailedInfo'>
           {uncover && <p className='actors'>Actors: {actors}</p>}
