@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import { Alert as BAlert, Pagination, Button, Form as BForm, Col } from 'react-bootstrap'
-import { Snackbar} from '@material-ui/core'
+import { Snackbar, TextField } from '@material-ui/core'
 import MuiAlert from '@material-ui/lab/Alert'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
@@ -254,17 +254,20 @@ class Form extends Component {
   render () {
     return (
       <form className='addFilm'>
-        <label>Film name</label>
-        <input
-          type="text" name="name"
+        <TextField
+          type='text'
+          name='name'
+          id='standard-basic'
+          label='Film name'
           value={this.state.name}
           onChange={this.handleInputChange}
         />
 
-        <label>Release year</label>
-        <input
-          type='number'
+        <TextField
           name='releaseYear'
+          type='number'
+          id='standard-basic'
+          label='Release year'
           value={this.state.releaseYear}
           onChange={this.handleInputChange}
         />
@@ -300,11 +303,14 @@ class Form extends Component {
           </BForm.Row>
         </BForm>
 
-        <label>Actors (comma separated)</label>
-        <input
-          type="text" name="actors"
+        <TextField
+          name='actors'
+          type='text'
+          id='standard-basic'
+          label='Actors (comma separated)'
           value={this.state.actors}
           onChange={this.handleInputChange}
+          style={{marginBottom: '1em'}}
         />
 
         <Button

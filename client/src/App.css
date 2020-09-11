@@ -131,7 +131,7 @@ body {
   display: flex;
   flex-direction: column;
   background-color: white;
-  padding: 0.5em;
+  padding: 0.8em;
   margin-top: 0.5em; margin-bottom: 0.5em;
   border-radius: 0.5em;
   box-shadow: -2px 2px 5px #47474782;
@@ -141,9 +141,7 @@ body {
   box-sizing: border-box;
   font-size: 1em;
   padding: 0.3em;
-  border: none; border-bottom: 1px solid #5F5F5F;
   margin: 0.3em;
-
 }
 
 .addFilm label {
@@ -160,6 +158,10 @@ body {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+}
+
+.dropZone:hover {
+  border: 5px dashed #5F5F5F;
 }
 
 .dropZone p {
