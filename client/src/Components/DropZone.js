@@ -38,6 +38,7 @@ export default function DropZone (props) {
           headers: {'Content-Type': 'text/plain'}
         }) )
         props.handleSearch()
+        console.log(films)
         const createdFilmsCount = films.filter(({ok}) => ok).length
         const notCreatedFilmsCount = films.filter(({ok}) => !ok).length
         props.handleModal({
@@ -56,8 +57,16 @@ export default function DropZone (props) {
     getInputProps,
     isDragActive,
     isDragAccept,
-    isDragReject
+    isDragReject,
+    onDropRejected
   } = useDropzone({onDrop, accept: 'text/plain'})
+
+  if (onDropRejected) {
+    console.log('______________----')
+    props.handleError({
+    code: 'INVALID_FILE_FORMAT',
+    message: 'The file must have permission .txt'
+  })}
 
   const style = useMemo(() => ({
     ...baseStyle,
@@ -77,7 +86,7 @@ export default function DropZone (props) {
           </>)
         : (<>
             <UploadIcon color='#23272b' />
-            <p>Yeah. Drop here!</p>
+            {isDragAccept? <p>Yeah. Drop here!</p> : <p>NO NO NO!!! Bad format!!!</p>}
             <br />
           </>)
       }

@@ -156,27 +156,27 @@ class AddFilm extends Component {
         }
         <ModalPortal
           show={!notCreatedFilmsCount && createdFilmsCount}
-          title="You\'re file succesfully uploaded!"
-          body={`Total files were uploaded to the server ${createdFilmsCount}`}
+          title={<p style={{color: 'green', margin: 0}}>You're file succesfully uploaded!</p>}
+          body={<p style={{margin: 0}}>Total files were uploaded to the server <b>{createdFilmsCount}</b>.</p>}
           handleClose={this.handleCloseModal}
         />
         <ModalPortal
           show={!createdFilmsCount && notCreatedFilmsCount}
-          title="You\'re file is broken!"
-          body={`The file you want to download does not contain movies, or they are not in the correct format.\r\n
-                The correct format is:\r\n
-                Name: name,\r\n
-                Release Year: releaseYear,\r\n
-                Format: VHS, DVD or Blue-Ray,\r\n
-                Actors: Name Surname, First name, Last name.`}
+          title={<p style={{color: 'red', margin: 0}}>You're file is broken!"</p>}
+          body={<p style={{margin: 0}}>The file you want to download does not contain movies, or they are not in the correct format.<br/>
+                The correct format is:<br/>
+                <b>Name:</b> name,<br/>
+                <b>Release Year:</b> releaseYear,<br/>
+                <b>Format:</b> VHS, DVD or Blue-Ray,<br/>
+                <b>Actors:</b> Name Surname, FirstName LastName.</p>}
           handleClose={this.handleCloseModal}
         />
         <ModalPortal
           show={createdFilmsCount && notCreatedFilmsCount}
-          title="Not so simple..."
-          body={`Your file uploaded with varying success.\r\n
-                Uploaded movies count: ${createdFilmsCount}.\r\n
-                Unloaded movies count: ${notCreatedFilmsCount}.`}
+          title={<p style={{color: 'yellow', margin: 0}}>Not so simple...</p>}
+          body={<p style={{margin: 0}}>Your file uploaded with varying success.<br/>
+                Uploaded movies count: <b>{createdFilmsCount}</b>.<br/>
+                Unloaded movies count: <b>{notCreatedFilmsCount}</b>.</p>}
           handleClose={this.handleCloseModal}
         />
       </>
