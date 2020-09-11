@@ -54,7 +54,7 @@ const importFilms = async (req, res) => {
   })
 
   req.on('end', async () => {
-    await processChunk(acc)
+    results.push(await processChunk(acc))
     res.send({ ok: true, data: results })
   })
 }
@@ -88,7 +88,7 @@ const parseComplitedPart = part => {
   const partStrings = part.split('\n')
   return partStrings
     .map(string => {
-      const matches = string.match(/(^[^:]+):(.*)$/)
+      const matches = string.match(/^([^:]+):(.*)$/)
       if (!matches) {
         return {}
       }

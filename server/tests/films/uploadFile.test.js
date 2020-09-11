@@ -2,15 +2,18 @@ const fs = require('fs')
 const fetch = require('node-fetch')
 const path = require('path')
 const { sequelize } = require('../../lib/model')
+const { app: { port } } = require('../../config')
 
 beforeAll(() => sequelize.sync({ force: true }))
 
 afterAll(() => sequelize.close())
 
 test('file could be correctly uploaded', async () => {
-  const file = await fs.readFileSync(path.resolve(__dirname, 'sample_movies.txt'))
+  const file = await fs.readFileSync(path.resolve(__dirname, 'sample_movies.txt'), 'utf8')
 
-  const response = await fetch('http://localhost:4000/api/importFilms', {
+  const fileLength = file.split('\n\n').length
+
+  const response = await fetch(`http://localhost:${port}/api/importFilms`, {
     method: 'POST',
     body: file
   })
@@ -30,4 +33,6 @@ test('file could be correctly uploaded', async () => {
       }
     })
   })
+
+  expect(body.data).toHaveLength(fileLength)
 })

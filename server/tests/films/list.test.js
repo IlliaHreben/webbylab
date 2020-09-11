@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const { sequelize } = require('../../lib/model')
+const { app: { port } } = require('../../config')
 
 beforeAll(() => sequelize.sync({ force: true }))
 
@@ -18,14 +19,20 @@ test('Film cheking', async () => {
 
   expect(responsedFilms).toEqual({
     ok: true,
-    data: films.map(film => ({
-      id: expect.any(Number),
-      ...film,
-      actors: film.actors.map(actor => ({
+    data: {
+      films: films.map(film => ({
         id: expect.any(Number),
-        ...actor
-      }))
-    }))
+        ...film,
+        actors: film.actors.map(actor => ({
+          id: expect.any(Number),
+          ...actor
+        }))
+      })),
+      pagination: {
+        pages: 1,
+        size: 10
+      }
+    }
   })
 })
 
@@ -34,17 +41,23 @@ test('Film cheking with film name filter', async () => {
 
   expect(responsedFilms).toEqual({
     ok: true,
-    data: [
-      {
-        id: expect.any(Number),
-        ...films[0],
-        actors: films[0].actors.map(actor => ({
+    data: {
+      films: [
+        {
           id: expect.any(Number),
-          ...actor
-        }))
-
+          ...films[0],
+          actors: films[0].actors.map(actor => ({
+            id: expect.any(Number),
+            ...actor
+          }))
+        }
+      ],
+      pagination: {
+        pages: 1,
+        size: 10
       }
-    ]
+    }
+
   })
 })
 
@@ -53,27 +66,33 @@ test('Film cheking with actor name filter', async () => {
 
   expect(responsedFilms).toEqual({
     ok: true,
-    data: [
-      {
-        id: expect.any(Number),
-        ...films[2],
-        actors: [{
+    data: {
+      films: [
+        {
           id: expect.any(Number),
-          name: 'George',
-          surname: 'Kennedy'
-        }]
+          ...films[2],
+          actors: [{
+            id: expect.any(Number),
+            name: 'George',
+            surname: 'Kennedy'
+          }]
 
-      }, {
-        id: expect.any(Number),
-        ...films[3],
-        actors: [{
+        }, {
           id: expect.any(Number),
-          name: 'George',
-          surname: 'Kennedy'
-        }]
-
+          ...films[3],
+          actors: [{
+            id: expect.any(Number),
+            name: 'George',
+            surname: 'Kennedy'
+          }]
+        }
+      ],
+      pagination: {
+        pages: 1,
+        size: 10
       }
-    ]
+    }
+
   })
 })
 
@@ -82,12 +101,18 @@ test('Film not find', async () => {
 
   expect(responsedFilms).toEqual({
     ok: true,
-    data: []
+    data: {
+      films: [],
+      pagination: {
+        size: 10,
+        pages: 0
+      }
+    }
   })
 })
 
 const getFilms = async (query = '') => {
-  const result = await fetch(`http://localhost:4000/api/films${query}`)
+  const result = await fetch(`http://localhost:${port}/api/films${query}`)
   const body = await result.json()
   return body
 }

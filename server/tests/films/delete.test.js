@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const { sequelize } = require('../../lib/model')
+const { app: { port } } = require('../../config')
 
 const requestBody = {
   name: 'Young Frankenstein3',
@@ -56,7 +57,7 @@ test('Invalid ID format', async () => {
 })
 
 const createFilm = async (requestBody) => {
-  const result = await fetch('http://localhost:4000/api/film', {
+  const result = await fetch(`http://localhost:${port}/api/film`, {
     method: 'POST',
     body: JSON.stringify(requestBody),
     headers: { 'Content-Type': 'application/json' }
@@ -66,7 +67,7 @@ const createFilm = async (requestBody) => {
 }
 
 const deleteFilm = async query => {
-  const result = await fetch('http://localhost:4000/api/film' + query, {
+  const result = await fetch(`http://localhost:${port}/api/film` + query, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' }
   })

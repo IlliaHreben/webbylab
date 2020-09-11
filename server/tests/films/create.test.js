@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const { sequelize } = require('../../lib/model')
+const { app: { port } } = require('../../config')
 
 const requestBody = {
   name: 'Young Frankenstein',
@@ -92,7 +93,7 @@ describe.each([
 })
 
 const createFilm = async requestBody => {
-  const result = await fetch('http://localhost:4000/api/film', {
+  const result = await fetch(`http://localhost:${port}/api/film`, {
     method: 'POST',
     body: JSON.stringify(requestBody),
     headers: { 'Content-Type': 'application/json' }
