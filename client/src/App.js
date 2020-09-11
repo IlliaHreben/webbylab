@@ -21,23 +21,25 @@ class App extends Component {
     await this.fetchFilms()
   }
 
-  fetchFilms = async (query = {}) => {
-    console.log(query)
+  fetchFilms = async () => {
+    const {pagination, searchFilm, searchActor} = this.state
     const searchParams = new URLSearchParams()
-    if (query.page) searchParams.set('page', query.page)
-    if (query.searchFilm) searchParams.set('searchFilm', query.searchFilm)
-    if (query.searchActor) searchParams.set('searchActor', query.searchActor)
+    if (pagination.page) searchParams.set('page', pagination.page)
+    if (searchFilm) searchParams.set('searchFilm', searchFilm)
+    if (searchActor) searchParams.set('searchActor', searchActor)
 
-    const {films, pagination } = await handleApiResponse( fetch('/api/films?' + searchParams.toString()) )
-    this.setState({ films, pagination })
+    const body = await handleApiResponse( fetch('/api/films?' + searchParams.toString()) )
+    this.setState(body)
   }
 
-  handleSearch = async query => {
+  handleSearch = query => {
     this.setState(({
       pagination: {},
       ...query
-    }), () => this.fetchFilms(query))
+    }), this.debouncedFetch)
   }
+
+  debouncedFetch = debounce( this.fetchFilms, 600)
 
   handleForm = film => {
     this.setState(({films}) => ({films: films.concat(film) }) )
@@ -51,8 +53,11 @@ class App extends Component {
     this.setState({error})
   }
 
-  handlePage = async page => {
-    await this.fetchFilms({page})
+  handlePage = page => {
+    this.setState(
+      ({pagination}) => ({pagination: {...pagination, page} }),
+      () => this.fetchFilms()
+    )
   }
 
   render () {
@@ -250,6 +255,10 @@ class AllFilms extends Component {
     activePage: 1
   }
 
+  shouldComponentUpdate (nextProps) {
+    return this.props.films !== nextProps.films
+  }
+
   handleDeleteFilm = async id => {
     try {
       await handleApiResponse(
@@ -264,23 +273,17 @@ class AllFilms extends Component {
     }
   }
 
-  componentDidUpdate (prevProps) {
-    if (prevProps !== this.props) {
-      const stupidArr = []
-      for (let i = 1; i <= this.props.pagination.pages; i++) { // такой херни я еще не писал
-        stupidArr.push(i)
-      }
-      this.setState({pageNumbers: stupidArr})
-    }
-
-  }
-
   changeActivePage = page => {
     this.props.handlePage(page)
     this.setState({activePage: page})
   }
 
   render () {
+    const pageNumbers = []
+    for (let i = 1; i <= this.props.pagination.pages; i++) { // такой херни я еще не писал
+      pageNumbers.push(i)
+    }
+
     return (
       <div className='allFilms'>
         {!this.props.films.length &&
@@ -299,7 +302,7 @@ class AllFilms extends Component {
           />
         )}
         <Pagination className='justify-content-center blue'>
-          {this.state.pageNumbers.map(pNum =>
+          {pageNumbers.map(pNum =>
             <Pagination.Item
               variant='secondary'
               active={pNum === this.state.activePage}
@@ -373,14 +376,9 @@ class FilmInfo extends Component {
 }
 
 class SearchFilm extends Component {
-  onInputChange = (e, key) => {
-    const value = e.target.value
-    return this.fetchFilms(value, key)
+  onInputChange = (value, key) => {
+    return this.props.handleSearch({[key]:value})
   }
-
-  fetchFilms = debounce(async (value, key) => {
-    this.props.handleSearch({[key]:value})
-  }, 600)
 
 //need optimization
   render () {
@@ -392,7 +390,7 @@ class SearchFilm extends Component {
               className='bForm'
               placeholder="Film name"
               value={this.props.filmSearch}
-              onChange={e => this.onInputChange(e, 'searchFilm')}
+              onChange={e => this.onInputChange(e.target.value, 'searchFilm')}
               autoComplete='off'
             />
           </Col>
@@ -401,7 +399,7 @@ class SearchFilm extends Component {
               className='bForm'
               placeholder="Actor name or surname"
               value={this.props.actorSearch}
-              onChange={e => this.onInputChange(e, 'searchActor')}
+              onChange={e => this.onInputChange(e.target.value, 'searchActor')}
               autoComplete='off'
             />
           </Col>
