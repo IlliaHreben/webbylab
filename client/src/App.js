@@ -68,6 +68,8 @@ class App extends Component {
           pagination={this.state.pagination}
           handlePage={this.handlePage}
           handleError={this.handleError}
+          searchFilm={this.state.searchFilm}
+          searchActor={this.state.searchActor}
         />
         <AddFilm
           handleForm={this.handleForm}
@@ -198,7 +200,6 @@ class Form extends Component {
         />
 
         <Button
-          // type="submit"
           variant='dark'
           onClick={this.handleSubmitOnClick}
           block
@@ -259,6 +260,8 @@ class AllFilms extends Component {
             handleError={this.handleError}
             handleDelete={this.handleDeleteFilm}
             {...film}
+            searchFilm={this.props.searchFilm}
+            searchActor={this.props.searchActor}
           />
         )}
         <Pagination className='justify-content-center blue'>
@@ -294,10 +297,18 @@ class FilmInfo extends Component {
   render () {
     const actors = this.props.actors.map(actor => `${actor.name} ${actor.surname}`).join(', ')
     const uncover = this.state.uncover
+
+    const [, filmNameFirstPart, filmNameSecondPart] = this.props.name.match(
+      new RegExp(`^(${this.props.searchFilm})(.*)`, 'i')
+    )
+
+
     return (
       <div className='filmInfo'>
         <div className='filmCaption'>
-          <div id='filmName' onClick={this.handleShow}>{this.props.name}</div>
+          <div id='filmName' onClick={this.handleShow}>
+            <b>{filmNameFirstPart}</b>{filmNameSecondPart}
+          </div>
           {
             !this.state.didRenderConfirm && <div
               id='delete'
