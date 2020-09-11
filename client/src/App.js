@@ -195,13 +195,15 @@ class Form extends Component {
 
         <label>Release year</label>
         <input
-          type="text" name="releaseYear"
+          // type='date'
+          type='number'
+          name='releaseYear'
           value={this.state.releaseYear}
           onChange={this.handleInputChange}
         />
 
         <BForm className='align-items-center'>
-          <BForm.Row className="align-items-center">
+          <BForm.Row className='radio'>
             <BForm.Check
               inline
               name='format'
@@ -366,9 +368,9 @@ class FilmInfo extends Component {
           <DeleteButton id={this.props.id} handleDelete={this.props.handleDelete}/>
         </div>
         <div className='detailedInfo'>
-          {uncover && <p className='actors'>Actors: {actors}</p>}
-          {uncover && <p className='releaseYear'>Release year: {this.props.releaseYear}</p>}
-          {uncover && <p className='format'>Format: {this.props.format}</p>}
+          {uncover && <p className='actors'><b>Actors:</b> {actors}</p>}
+          {uncover && <p className='releaseYear'><b>Release year:</b> {this.props.releaseYear}</p>}
+          {uncover && <p className='format'><b>Format:</b> {this.props.format}</p>}
         </div>
       </div>
     )

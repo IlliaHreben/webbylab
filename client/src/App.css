@@ -11,7 +11,7 @@ body {
 
 .active .page-link { background-color: #343a40 !important; border-color: #343a40 !important;}
 
-.form-row { justify-content: space-around; margin: 0.5em;}
+.radio { justify-content: space-around; margin: 0.5em;}
 
 .bForm {
   margin-top: 0.5em;
@@ -66,11 +66,13 @@ body {
 .filmCaption {
   flex-direction: row;
   display: flex;
-  cursor: pointer;
+
   padding-top: 0.3em; padding-bottom: 0.3em;
   margin-left: 0.5em; margin-right: 0.5em;
   border-bottom: 1px solid #5F5F5F;
 }
+
+
 
 .filmCaption div {
   width: 1em;
@@ -82,6 +84,20 @@ body {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.filmCaption {
+  transition: .2s;
+  padding-left: 0.4em; padding-right: 0.4em;
+}
+
+.filmCaption:hover {
+  color: white;
+  background-color: #343a40;
+  border-color: #343a40;
+  box-sizing: border-box;
 }
 
 .searchActorName {
@@ -104,6 +120,7 @@ body {
   border-radius: 0.1em;
   cursor: pointer;
   text-transform: uppercase;
+  color: #212529;
 }
 
 .detailedInfo {
