@@ -16,6 +16,7 @@ docker-compose up
 ```bash
 cd webbylab
 cd server
+cp .env.sample .env
 docker-compose up
 npm start
 cd ../client
