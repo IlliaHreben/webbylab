@@ -166,3 +166,7 @@ body {
   text-align: center;
   margin: 0;
 }
+
+.dropZone svg {
+  transition: .3s;
+}

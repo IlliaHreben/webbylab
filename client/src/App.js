@@ -7,6 +7,7 @@ import debounce from 'lodash/debounce'
 
 import DropZone from './Components/DropZone'
 import DeleteButton from './Components/DeleteButton'
+import ModalPortal from './Components/Modal'
 
 class App extends Component {
   state = {
@@ -98,7 +99,9 @@ class App extends Component {
 
 class AddFilm extends Component {
   state = {
-    didRenderForm: false
+    didRenderForm: false,
+    createdFilmsCount: null,
+    notCreatedFilmsCount: null
   }
 
   handleSubmit = async film => {
@@ -116,12 +119,25 @@ class AddFilm extends Component {
 
   handleSearch = () => {
     this.props.handleSearch()
-    this.setState({ didRenderForm: false })
+    // this.setState({ didRenderForm: false })
+  }
+
+  handleMountModal = filmCounts => {
+    this.setState(filmCounts)
+  }
+
+  handleCloseModal = () => {
+    this.setState({
+      createdFilmsCount: null,
+      notCreatedFilmsCount: null
+    })
   }
 
   render () {
     const handleError = this.props.handleError
     const didRenderForm = this.state.didRenderForm
+    const createdFilmsCount = this.state.createdFilmsCount
+    const notCreatedFilmsCount = this.state.notCreatedFilmsCount
 
     return (
       <>
@@ -132,8 +148,37 @@ class AddFilm extends Component {
         >Add film</Button>
         {didRenderForm && <Form handleSubmit={this.handleSubmit}/>}
         {didRenderForm &&
-          <DropZone handleSearch={this.handleSearch} handleError={handleError}/>
+          <DropZone
+            handleSearch={this.handleSearch}
+            handleError={handleError}
+            handleModal={this.handleMountModal}
+          />
         }
+        <ModalPortal
+          show={!notCreatedFilmsCount && createdFilmsCount}
+          title="You\'re file succesfully uploaded!"
+          body={`Total files were uploaded to the server ${createdFilmsCount}`}
+          handleClose={this.handleCloseModal}
+        />
+        <ModalPortal
+          show={!createdFilmsCount && notCreatedFilmsCount}
+          title="You\'re file is broken!"
+          body={`The file you want to download does not contain movies, or they are not in the correct format.\r\n
+                The correct format is:\r\n
+                Name: name,\r\n
+                Release Year: releaseYear,\r\n
+                Format: VHS, DVD or Blue-Ray,\r\n
+                Actors: Name Surname, First name, Last name.`}
+          handleClose={this.handleCloseModal}
+        />
+        <ModalPortal
+          show={createdFilmsCount && notCreatedFilmsCount}
+          title="Not so simple..."
+          body={`Your file uploaded with varying success.\r\n
+                Uploaded movies count: ${createdFilmsCount}.\r\n
+                Unloaded movies count: ${notCreatedFilmsCount}.`}
+          handleClose={this.handleCloseModal}
+        />
       </>
     )
   }
