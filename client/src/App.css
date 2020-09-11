@@ -11,6 +11,8 @@ body {
 
 .active .page-link { background-color: #343a40 !important; border-color: #343a40 !important;}
 
+.form-row { justify-content: space-around; margin: 0.5em;}
+
 .bForm {
   margin-top: 0.5em;
   box-shadow: -2px 2px 5px #47474782;

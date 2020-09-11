@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { Alert, Pagination, Button, Form as BForm, Col } from 'react-bootstrap'
+import { Alert, Pagination, Button, Form as BForm, Col, } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
 
@@ -155,6 +155,12 @@ class Form extends Component {
     })
   }
 
+  handleRadioChange = value => {
+    this.setState({
+      format: value
+    })
+  }
+
   handleSubmitOnClick = () => {
     const actors = this.state.actors
       .split(', ')
@@ -189,12 +195,36 @@ class Form extends Component {
           onChange={this.handleInputChange}
         />
 
-        <label>Format</label>
-        <input
-          type="text" name="format"
-          value={this.state.format}
-          onChange={this.handleInputChange}
-        />
+        <BForm className='align-items-center'>
+          <BForm.Row className="align-items-center">
+            <BForm.Check
+              inline
+              name='format'
+              type='radio'
+              id='VHS'
+              label='VHS'
+              onClick={() => this.handleRadioChange('VHS')}
+            />
+
+            <BForm.Check
+              inline
+              name='format'
+              type='radio'
+              label='DVD'
+              id='DVD'
+              onClick={() => this.handleRadioChange('DVD')}
+            />
+
+            <BForm.Check
+              inline
+              name='format'
+              type='radio'
+              label='Blu-Ray'
+              id='Blu-Ray'
+              onClick={() => this.handleRadioChange('Blu-Ray')}
+            />
+          </BForm.Row>
+        </BForm>
 
         <label>Actors (comma separated)</label>
         <input
