@@ -71,20 +71,19 @@ test('Film cheking with actor name filter', async () => {
         {
           id: expect.any(Number),
           ...films[2],
-          actors: [{
+          actors: films[2].actors.map(actor => ({
             id: expect.any(Number),
-            name: 'George',
-            surname: 'Kennedy'
-          }]
-
+            name: actor.name,
+            surname: actor.surname
+          }))
         }, {
           id: expect.any(Number),
           ...films[3],
-          actors: [{
+          actors: films[3].actors.map(actor => ({
             id: expect.any(Number),
-            name: 'George',
-            surname: 'Kennedy'
-          }]
+            name: actor.name,
+            surname: actor.surname
+          }))
         }
       ],
       pagination: {

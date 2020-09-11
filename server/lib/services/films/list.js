@@ -14,22 +14,17 @@ const validatorRules = {
 const execute = async filters => {
   const offset = filters.page * filters.size - filters.size
   const limit = filters.size
-  console.log(offset, limit)
 
-  const filmsWhere = filters.searchFilm ? { name: { [Op.startsWith]: filters.searchFilm } } : {}
-  const actorsWhere = filters.searchActor ? {
-    [Op.or]: {
-      name: { [Op.startsWith]: filters.searchActor },
-      surname: { [Op.startsWith]: filters.searchActor }
-    }
-  } : {}
+  const where = {
+    ...await getFilterByActors(filters.searchActor),
+    ...getFilterByFilms(filters.searchFilm)
+  }
 
   const { rows: films, count } = await Films.findAndCountAll({
-    where: filmsWhere,
+    where,
     distinct: true,
     include: [{
-      model: Actors,
-      where: actorsWhere
+      model: Actors
     }],
     offset,
     limit,
@@ -40,6 +35,35 @@ const execute = async filters => {
     films: films.map(formatFilm),
     pagination: { size: filters.size, pages: Math.ceil(count / filters.size) }
   }
+}
+
+const getFilterByActors = async search => {
+  if (!search) {
+    return {}
+  }
+
+  const allFilmsIds = (
+    await Films.findAll({
+      include: [{
+        model: Actors,
+        where: {
+          [Op.or]: {
+            name: { [Op.startsWith]: search },
+            surname: { [Op.startsWith]: search }
+          }
+        }
+      }]
+    })
+  ).map(film => film.id)
+
+  return { id: allFilmsIds }
+}
+
+const getFilterByFilms = search => {
+  if (!search) {
+    return {}
+  }
+  return { name: { [Op.startsWith]: search } }
 }
 
 module.exports = { execute, validatorRules }
