@@ -137,15 +137,9 @@ body {
   box-shadow: -2px 2px 5px #47474782;
 }
 
-.addFilm input {
-  box-sizing: border-box;
-  font-size: 1em;
-  padding: 0.3em;
-  margin: 0.3em;
-}
-
 .addFilm label {
   margin-left: 0.5em;
+  margin-bottom: 0;
 }
 
 .dropZone {

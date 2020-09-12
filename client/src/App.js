@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from 'react'
-import { Alert as BAlert, Pagination, Button, Form as BForm, Col } from 'react-bootstrap'
-import { Snackbar, TextField } from '@material-ui/core'
-import MuiAlert from '@material-ui/lab/Alert'
+import { Alert as BAlert, Pagination, Form as BForm, Col } from 'react-bootstrap'
+import { Snackbar, TextField, RadioGroup, FormControlLabel, FormControl, FormLabel, Radio, Button, Icon } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import './App.css'
+
 import 'fontsource-roboto'
-import '@material-ui/styles'
+import './App.css'
 
 import debounce from 'lodash/debounce'
 
@@ -19,7 +19,7 @@ class App extends Component {
     searchFilm: '',
     searchActor: '',
     pagination: {},
-    error: null
+    error: {show: false}
   }
 
   async componentDidMount () {
@@ -51,7 +51,7 @@ class App extends Component {
   }
 
   handleError = error => {
-    this.setState({error})
+    this.setState({error: {show: true, ...error}})
   }
 
   handlePage = page => {
@@ -87,22 +87,18 @@ class App extends Component {
           handleError={this.handleError}
         />
         <Snackbar
-          open={!!error}
+          open={error.show}
           autoHideDuration={3000}
-          onClose={() => this.setState({error: null})}
+          onClose={() => this.setState({error: {show: false}})}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <Alert severity='error'>
-            {error ? error.message : null}
+          <Alert variant='filled' severity='error'>
+            {error.show ? error.message : null}
           </Alert>
         </Snackbar>
       </>
     )
   }
-}
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />
 }
 
 class AddFilm extends Component {
@@ -152,7 +148,9 @@ class AddFilm extends Component {
     return (
       <>
         <Button
-          variant='dark'
+          fullWidth='true'
+          variant='contained'
+          color='primary'
           onClick={() => this.setState(({didRenderForm}) => ({didRenderForm: !didRenderForm}))}
           block
         >Add film</Button>
@@ -208,6 +206,7 @@ class Form extends Component {
   state = {
     name: '',
     releaseYear: '',
+    isCorrectReleaseYear: true,
     format: '',
     actors: ''
   }
@@ -216,16 +215,22 @@ class Form extends Component {
     const value = e.target.value
     const name = e.target.name
 
-    this.setState({
+    const nextState = {
       [name]: value
-    })
+    }
+
+    if (name === 'releaseYear') {
+      this.handleIsCorrectReleaseYear(value)
+    }
+
+    this.setState(nextState)
   }
 
-  handleRadioChange = value => {
-    this.setState({
-      format: value
-    })
-  }
+  // handleRadioChange = value => {
+  //   this.setState({
+  //     format: value
+  //   })
+  // }
 
   handleSubmitOnClick = () => {
     const actors = this.state.actors
@@ -247,75 +252,78 @@ class Form extends Component {
       name: '',
       releaseYear: '',
       format: '',
-      actors: ''
+      actors: '',
+      isCorrectReleaseYear: true
     })
   }
 
+  handleIsCorrectReleaseYear = debounce(releaseYear => {
+    this.setState({
+      isCorrectReleaseYear: ((releaseYear < 1895)
+        || (releaseYear > new Date().getFullYear()))
+        && releaseYear !== ''
+        ? false
+        : true
+    })
+  }, 600)
+
   render () {
+    const state = this.state
+    const isCorrectReleaseYear = this.state.isCorrectReleaseYear
     return (
       <form className='addFilm'>
+        <FormControl component='fieldset'>
         <TextField
+          variant='filled'
           type='text'
           name='name'
-          id='standard-basic'
+          id='filled-basic'
           label='Film name'
-          value={this.state.name}
+          value={state.name}
           onChange={this.handleInputChange}
         />
 
         <TextField
+          {...isCorrectReleaseYear ? {} : {error:true, helperText:'Year must be between 1895 and current.'}}
+          variant='filled'
           name='releaseYear'
           type='number'
-          id='standard-basic'
+          id='filled-basic'
           label='Release year'
-          value={this.state.releaseYear}
+          value={state.releaseYear}
           onChange={this.handleInputChange}
         />
-
-        <BForm className='align-items-center'>
-          <BForm.Row className='radio'>
-            <BForm.Check
-              inline
-              name='format'
-              type='radio'
-              id='VHS'
-              label='VHS'
-              onClick={() => this.handleRadioChange('VHS')}
-            />
-
-            <BForm.Check
-              inline
-              name='format'
-              type='radio'
-              label='DVD'
-              id='DVD'
-              onClick={() => this.handleRadioChange('DVD')}
-            />
-
-            <BForm.Check
-              inline
-              name='format'
-              type='radio'
-              label='Blu-Ray'
-              id='Blu-Ray'
-              onClick={() => this.handleRadioChange('Blu-Ray')}
-            />
-          </BForm.Row>
-        </BForm>
+        <RadioGroup row style={{justifyContent: 'center', marginTop: '0.5em'}}
+          color='secondary'
+          className='format'
+          aria-label='Film format'
+          name='format'
+          value={state.format}
+          onChange={this.handleInputChange}
+        >
+          <FormControlLabel value='VHS' control={<Radio />} label='VHS' />
+          <FormControlLabel value='DVD' control={<Radio />} label='DVD' />
+          <FormControlLabel value='Blu-Ray' control={<Radio />} label='Blu-Ray' />
+        </RadioGroup>
 
         <TextField
+          multiline
+          variant='filled'
           name='actors'
           type='text'
-          id='standard-basic'
+          id='filled-textarea'
           label='Actors (comma separated)'
           value={this.state.actors}
           onChange={this.handleInputChange}
           style={{marginBottom: '1em'}}
         />
+        </FormControl>
 
         <Button
-          variant='dark'
+          variant='contained'
+          color='primary'
           onClick={this.handleSubmitOnClick}
+          endIcon={<Icon>send</Icon>}
           block
         >Send</Button>
       </form>
