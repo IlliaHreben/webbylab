@@ -1,6 +1,10 @@
 import React, { Component, Fragment } from 'react'
 import { Alert as BAlert, Pagination, Form as BForm, Col } from 'react-bootstrap'
-import { Snackbar, TextField, RadioGroup, FormControlLabel, FormControl, FormLabel, Radio, Button, Icon } from '@material-ui/core'
+import { Snackbar, TextField, RadioGroup,
+  FormControlLabel, FormControl, FormLabel,
+  Radio, Button, Icon, IconButton
+} from '@material-ui/core'
+import { Delete as DeleteIcon } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -193,7 +197,7 @@ class AddFilm extends Component {
           onClose={() => this.setState({didRenderSuccesMessage: false})}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <Alert severity='success'>
+          <Alert variant='filled' severity='success'>
             The film was successfully created!
           </Alert>
         </Snackbar>
@@ -208,7 +212,7 @@ class Form extends Component {
     releaseYear: '',
     isCorrectReleaseYear: true,
     format: '',
-    actors: ''
+    actors: [{ name: '', surname: '' }]
   }
 
   handleInputChange = e => {
@@ -226,33 +230,21 @@ class Form extends Component {
     this.setState(nextState)
   }
 
-  // handleRadioChange = value => {
-  //   this.setState({
-  //     format: value
-  //   })
-  // }
-
   handleSubmitOnClick = () => {
-    const actors = this.state.actors
-      .split(', ')
-      .map(actor => {
-        const separatedActor = actor.split(' ')
-        return { name: separatedActor[0], surname: separatedActor[1]}
-      }
-    )
 
     this.props.handleSubmit({
       name: this.state.name,
       releaseYear: this.state.releaseYear,
       format: this.state.format,
-      actors
+      actors: this.state.actors.filter(({ name, surname }) => name && surname)
     })
+
 
     this.setState({
       name: '',
       releaseYear: '',
       format: '',
-      actors: '',
+      actors: [{ name: '', surname: '' }],
       isCorrectReleaseYear: true
     })
   }
@@ -267,11 +259,29 @@ class Form extends Component {
     })
   }, 600)
 
+  deleteActor = id => {
+    this.setState(({actors}) => ({ actors: actors.filter((_, i) => id !== i )}))
+  }
+
+  setActor = (e, id) => {
+    const key = e.target.name
+    const value = e.target.value.trim().replace(/[0-9]/g, '')
+    const actor = { [key]: value }
+    this.setState(({actors}) => {
+      actors[id] = {...actors[id], ...actor}
+      return {actors}
+    } )
+  }
+
+  addField = () => {
+    this.setState(({actors}) => ({ actors: actors.concat({name:'', surname:''}) }) )
+  }
+
   render () {
     const state = this.state
     const isCorrectReleaseYear = this.state.isCorrectReleaseYear
     return (
-      <form className='addFilm'>
+      <div className='addFilm'>
         <FormControl component='fieldset'>
         <TextField
           variant='filled'
@@ -284,7 +294,7 @@ class Form extends Component {
         />
 
         <TextField
-          {...isCorrectReleaseYear ? {} : {error:true, helperText:'Year must be between 1895 and current.'}}
+          {...isCorrectReleaseYear ? {} : { error: true, helperText:'Year must be between 1895 and current.' }}
           variant='filled'
           name='releaseYear'
           type='number'
@@ -306,30 +316,62 @@ class Form extends Component {
           <FormControlLabel value='Blu-Ray' control={<Radio />} label='Blu-Ray' />
         </RadioGroup>
 
-        <TextField
-          multiline
-          variant='filled'
-          name='actors'
-          type='text'
-          id='filled-textarea'
-          label='Actors (comma separated)'
-          value={this.state.actors}
-          onChange={this.handleInputChange}
-          style={{marginBottom: '1em'}}
-        />
-        </FormControl>
-
+        {this.state.actors.map((actor, i, arr) => <ActorsField
+          key={i} id={i}
+          actor={actor}
+          onChange={this.setActor}
+          deleteActor={this.deleteActor}
+          lastElement={i + 1 === arr.length}
+          addField={this.addField}
+        />)}
         <Button
+          fullWidth='true'
           variant='contained'
           color='primary'
           onClick={this.handleSubmitOnClick}
           endIcon={<Icon>send</Icon>}
           block
         >Send</Button>
-      </form>
+        </FormControl>
+      </div>
     )
   }
 
+}
+
+const ActorsField = props => {
+  const lastElementProps = props.lastElement ? { onClick: props.addField, styles: { marginBottom: '1em' } } : {}
+  const styledField = { style: { marginLeft:'0.5em', marginRigth:'0.5em', marginBottom: props.lastElement ? '1em' : '0'} }
+  return (
+    <div style={{display:'flex', justifyContent: 'center', alignItems: 'center'}} >
+      <TextField {...styledField}
+        autoComplete='true'
+        name='name'
+        label='Name'
+        variant='filled'
+        value={props.actor.name}
+        onChange={e => props.onChange(e, props.id)}
+        {...lastElementProps}
+      />
+      <TextField {...styledField}
+        autoComplete='true'
+        name='surname'
+        label='Surname'
+        variant='filled'
+        value={props.actor.surname}
+        onChange={e => props.onChange(e, props.id)}
+        {...lastElementProps}
+      />
+      <IconButton
+        disabled={props.lastElement}
+        aria-label='delete'
+        onClick={() => props.deleteActor(props.id)}
+      >
+        <DeleteIcon fontSize='small' />
+      </IconButton>
+    </div>
+
+  )
 }
 
 class AllFilms extends Component {
@@ -370,9 +412,10 @@ class AllFilms extends Component {
     return (
       <div className='allFilms'>
         {!this.props.films.length &&
-          <BAlert variant='light' style={{margin: '0.1em', marginBottom: '-1em', textAlign: 'center'}}>
-            No movies found. Please add a new movie or change your search parameters.
-          </BAlert>
+          <Alert
+            severity='info' color='#818182'
+            style={{margin: '0.1em', marginBottom: '-1.2em', justifyContent: 'center', padding: '1em'}}
+          >No movies found. Please add a new movie or change your search parameters.</Alert>
         }
         {this.props.films.map(film =>
           <FilmInfo

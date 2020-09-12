@@ -80,12 +80,12 @@ export default function DropZone (props) {
       <input {...getInputProps({multiple: false, accept: 'text/plain'})} />
       {!isDragActive
         ? (<>
-            <UploadIcon color='#343a40' />
+            <UploadIcon color='#3f51b5' />
             <p>Drag 'n' drop some files here, or click to select files</p>
             <p>(Only *.txt files will be accepted)</p>
           </>)
         : (<>
-            <UploadIcon color='#23272b' />
+            <UploadIcon color='#303f9f' />
             {isDragAccept? <p>Yeah. Drop here!</p> : <p>NO NO NO!!! Bad format!!!</p>}
             <br />
           </>)
