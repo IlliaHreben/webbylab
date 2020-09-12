@@ -115,15 +115,17 @@ class AddFilm extends Component {
 
   handleSubmit = async film => {
     try {
-      await handleApiResponse( fetch(`/api/film`, {
+      const res = await handleApiResponse( fetch(`/api/film`, {
         method: 'POST',
         body: JSON.stringify(film),
         headers: { 'Content-Type': 'application/json' }
       }) )
       this.props.handleSearch()
       this.setState({didRenderSuccesMessage: true})
+      return res
     } catch (error) {
       this.props.handleError(error)
+      return error
     }
   }
 
@@ -230,32 +232,30 @@ class Form extends Component {
     this.setState(nextState)
   }
 
-  handleSubmitOnClick = () => {
+  handleSubmitOnClick = async () => {
 
-    this.props.handleSubmit({
+    const res =  await this.props.handleSubmit({
       name: this.state.name,
       releaseYear: this.state.releaseYear,
       format: this.state.format,
       actors: this.state.actors.filter(({ name, surname }) => name && surname)
     })
-
-
-    this.setState({
-      name: '',
-      releaseYear: '',
-      format: '',
-      actors: [{ name: '', surname: '' }],
-      isCorrectReleaseYear: true
-    })
+    if (!res.code) {
+      this.setState({
+        name: '',
+        releaseYear: '',
+        format: '',
+        actors: [{ name: '', surname: '' }],
+        isCorrectReleaseYear: true
+      })
+    }
   }
 
   handleIsCorrectReleaseYear = debounce(releaseYear => {
     this.setState({
-      isCorrectReleaseYear: ((releaseYear < 1895)
-        || (releaseYear > new Date().getFullYear()))
-        && releaseYear !== ''
-        ? false
-        : true
+      isCorrectReleaseYear: (( releaseYear > 1895 )
+        && (releaseYear < new Date().getFullYear()))
+        || releaseYear === ''
     })
   }, 600)
 
@@ -284,6 +284,7 @@ class Form extends Component {
       <div className='addFilm'>
         <FormControl component='fieldset'>
         <TextField
+          inputProps={{ maxLength: 90 }}
           variant='filled'
           type='text'
           name='name'
@@ -294,7 +295,10 @@ class Form extends Component {
         />
 
         <TextField
-          {...isCorrectReleaseYear ? {} : { error: true, helperText:'Year must be between 1895 and current.' }}
+          {...isCorrectReleaseYear
+            ? {}
+            : { error: true, helperText:'Year must be between 1895 and current.' }
+          }
           variant='filled'
           name='releaseYear'
           type='number'
@@ -345,6 +349,7 @@ const ActorsField = props => {
   return (
     <div style={{display:'flex', justifyContent: 'center', alignItems: 'center'}} >
       <TextField {...styledField}
+        inputProps={{ maxLength: 90 }}
         autoComplete='true'
         name='name'
         label='Name'
@@ -354,6 +359,7 @@ const ActorsField = props => {
         {...lastElementProps}
       />
       <TextField {...styledField}
+        inputProps={{ maxLength: 90 }}
         autoComplete='true'
         name='surname'
         label='Surname'
@@ -513,6 +519,7 @@ class SearchFilm extends Component {
         <BForm.Row>
           <Col>
             <BForm.Control
+              maxlength='90'
               className='bForm'
               placeholder="Film name"
               value={this.props.filmSearch}
@@ -522,6 +529,7 @@ class SearchFilm extends Component {
           </Col>
           <Col>
             <BForm.Control
+              maxlength='90'
               className='bForm'
               placeholder="Actor name or surname"
               value={this.props.actorSearch}
