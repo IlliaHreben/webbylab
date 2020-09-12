@@ -1,13 +1,14 @@
 import React, { Component, Fragment } from 'react'
 import { Pagination } from 'react-bootstrap'
-import { Snackbar, TextField, RadioGroup,
-  FormControlLabel, FormControl, FormLabel,
-  Radio, Button, Icon, IconButton, Grid, Paper
+import { Snackbar, TextField, RadioGroup, FormControlLabel, FormControl, Radio,
+  Button, Icon, IconButton, Grid, Paper, Accordion, AccordionSummary, Typography,
+  AccordionDetails, AccordionActions
 } from '@material-ui/core'
-import { Delete as DeleteIcon } from '@material-ui/icons'
+import MuiAccordion from '@material-ui/core/Accordion'
+import { Delete as DeleteIcon, ExpandMore as ExpandMoreIcon } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, withStyles } from '@material-ui/core/styles'
 
 import 'fontsource-roboto'
 import './App.css'
@@ -369,8 +370,14 @@ class Form extends Component {
 }
 
 const ActorsField = props => {
-  const lastElementProps = props.lastElement ? { onClick: props.addField, styles: { marginBottom: '1em' } } : {}
-  const styledField = { style: { marginLeft:'0.5em', marginRigth:'0.5em', marginBottom: props.lastElement ? '1em' : '0'} }
+  const lastElementProps = props.lastElement
+    ? { onClick: props.addField, styles: { marginBottom: '1em' } }
+    : {}
+  const styledField = { style: {
+    marginLeft:'0.5em',
+    marginRigth:'0.5em',
+    marginBottom: props.lastElement ? '1em' : '0'
+  } }
   const sameActor =
     props.sameActor
     ? { error: true, helperText: 'Actors must be unique.' }
@@ -451,7 +458,12 @@ class AllFilms extends Component {
         {!this.props.films.length &&
           <Alert
             severity='info' color='info'
-            style={{margin: '0.1em', marginBottom: '-1.2em', justifyContent: 'center', padding: '1em'}}
+            style={{
+              margin: '0.1em',
+              marginBottom: '-1.2em',
+              justifyContent: 'center',
+              padding: '1em'
+            }}
           >No movies found. Please add a new movie or change your search parameters.</Alert>
         }
         {this.props.films.map(film =>
@@ -480,67 +492,6 @@ class AllFilms extends Component {
   }
 }
 
-class FilmInfo extends Component {
-  state = {
-    uncover: false
-  }
-
-  handleShow = () => {
-    this.setState(({uncover}) => ({uncover: !uncover}))
-  }
-
-  handleConfirm = () => {
-    this.setState(({didRenderConfirm}) => ({didRenderConfirm: !didRenderConfirm}))
-  }
-
-  render () {
-    const props = this.props
-
-    const actors = props.actors.map(actor => `${actor.name} ${actor.surname}`).join(', ')
-    const uncover = this.state.uncover
-
-    const [, filmNameFirstPart, filmNameSecondPart] = props.name.match(
-      new RegExp(`^(${props.searchFilm})(.*)`, 'i')
-    ) || [ '', '', props.name]
-
-    const foundedActors = props.searchActor
-    ? props.actors
-      .filter(({name, surname}) => name.startsWith(props.searchActor) || surname.startsWith(props.searchActor))
-      .map(({id, name, surname}, i, arr) => {
-        const regexp = new RegExp(`^(${this.props.searchActor})(.*)`, 'i')
-
-        const [, actorNameFirstPart, actorNameSecondPart] = name.match(regexp) || [ '', '', name ]
-        const [, actorSurnameFirstPart, actorSurnameSecondPart] = surname.match(regexp) || [ '', '', surname ]
-
-        const separartor = !(i === arr.length - 1)
-        return (<Fragment key={id}>
-          <b>{actorNameFirstPart}</b>
-          {actorNameSecondPart} <b>{actorSurnameFirstPart}</b>
-          {actorSurnameSecondPart}{separartor && ',  '}</Fragment>)
-      })
-    : null
-
-    return (
-      <div className='filmInfo'>
-        <div className='filmCaption'>
-          <div id='filmName' onClick={this.handleShow}>
-            <b>{filmNameFirstPart}</b>{filmNameSecondPart}
-          </div>
-          <div
-            className='searchActorName'
-          ><p>{foundedActors}</p></div>
-          <DeleteButton id={this.props.id} handleDelete={this.props.handleDelete}/>
-        </div>
-        <div className='detailedInfo'>
-          {uncover && <p className='actors'><b>Actors:</b> {actors}</p>}
-          {uncover && <p className='releaseYear'><b>Release year:</b> {this.props.releaseYear}</p>}
-          {uncover && <p className='format'><b>Format:</b> {this.props.format}</p>}
-        </div>
-      </div>
-    )
-  }
-}
-
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -552,10 +503,80 @@ const useStyles = makeStyles((theme) => ({
   },
   input: {
     justifyContent: 'stretch',
-
-    //
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    flexBasis: '50%',
+    flexShrink: 0,
+    textTransform: 'uppercase'
+  },
+  secondaryHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: theme.palette.text.secondary,
   }
 }))
+
+const FilmInfo = props => {
+
+  const actors = props.actors.map(actor => `${actor.name} ${actor.surname}`).join(', ')
+
+  const [, filmNameFirstPart, filmNameSecondPart] = props.name.match(
+    new RegExp(`^(${props.searchFilm})(.*)`, 'i')
+  ) || [ '', '', props.name]
+
+  const foundedActors = props.searchActor
+  ? props.actors
+    .filter(({name, surname}) =>
+      name.startsWith(props.searchActor) || surname.startsWith(props.searchActor))
+    .map(({id, name, surname}, i, arr) => {
+      const regexp = new RegExp(`^(${props.searchActor})(.*)`, 'i')
+
+      const [
+        ,
+        actorNameFirstPart,
+        actorNameSecondPart
+      ] = name.match(regexp) || [ '', '', name ]
+      const [
+        ,
+        actorSurnameFirstPart,
+        actorSurnameSecondPart
+      ] = surname.match(regexp) || [ '', '', surname ]
+
+      const separartor = !(i === arr.length - 1)
+      return (<Fragment key={id}>
+        <b>{actorNameFirstPart}</b> {actorNameSecondPart}
+        <b>{actorSurnameFirstPart}</b> {actorSurnameSecondPart}{separartor && ',  '}
+      </Fragment>)
+    })
+  : null
+
+  const classes = useStyles()
+
+  return (
+    <Accordion >
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+      >
+        <Typography
+          className={classes.heading}
+        >
+          <b>{filmNameFirstPart}</b>{filmNameSecondPart}
+        </Typography>
+        <Typography className={classes.secondaryHeading} >{foundedActors}</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Typography>
+          <b>Actors:</b> {actors}<br/>
+          <b>Release year:</b> {props.releaseYear}<br/>
+          <b>Format:</b> {props.format}<br/>
+        </Typography>
+      </AccordionDetails>
+      <AccordionActions>
+        <DeleteButton id={props.id} handleDelete={props.handleDelete}/>
+      </AccordionActions>
+    </Accordion>
+  )
+}
 
 function SearchFilm (props) {
   const onInputChange = (value, key) => {
