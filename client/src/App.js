@@ -268,9 +268,12 @@ class Form extends Component {
     const actor = { [key]: value }
 
     this.setState(({actors}) => {
-      const actorSameId = this.elementSameId(actors, {...actors[id], ...actor})
+      const actorSameId = this.didElementHaveSameId(actors, {...actors[id], ...actor})
       const newActors = actors.map((prevActor, i) => i === id ? {...actors[id], ...actor} : prevActor)
-      this.setSameActor(actorSameId !== -1 ? {id: [actorSameId, id], key} : false)
+      if (value !== '') {
+        this.setSameActor(actorSameId !== -1 ? {id: [actorSameId, id], key} : false)
+      }
+
 
       return {actors: newActors, sameActor: false}
     } )
@@ -280,7 +283,7 @@ class Form extends Component {
     this.setState({sameActor: actor})
   }, 600)
 
-  elementSameId = (array, element) => {
+  didElementHaveSameId = (array, element) => {
     return array.map(checkingElement => {
       return JSON.stringify(checkingElement) === JSON.stringify(element)
     }).indexOf(true)
@@ -294,6 +297,12 @@ class Form extends Component {
     const state = this.state
     const isCorrectReleaseYear = this.state.isCorrectReleaseYear
     const sameActor = this.state.sameActor
+    const didSendButtonEnabled = state.name
+      && state.releaseYear
+      && state.isCorrectReleaseYear
+      && state.format
+      && state.actors.filter(({name, surname}) => name && surname)[0]
+      && !sameActor
 
     return (
       <div className='addFilm'>
@@ -345,6 +354,7 @@ class Form extends Component {
           addField={this.addField}
         />)}
         <Button
+          disabled={!didSendButtonEnabled}
           fullWidth='true'
           variant='contained'
           color='primary'
