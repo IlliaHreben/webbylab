@@ -129,11 +129,6 @@ class AddFilm extends Component {
     }
   }
 
-  handleSearch = () => {
-    this.props.handleSearch()
-    // this.setState({ didRenderForm: false })
-  }
-
   handleMountModal = filmCounts => {
     this.setState(filmCounts)
   }
@@ -163,7 +158,7 @@ class AddFilm extends Component {
         {didRenderForm && <Form handleSubmit={this.handleSubmit}/>}
         {didRenderForm &&
           <DropZone
-            handleSearch={this.handleSearch}
+            handleSearch={this.props.handleSearch}
             handleError={handleError}
             handleModal={this.handleMountModal}
           />
@@ -214,7 +209,8 @@ class Form extends Component {
     releaseYear: '',
     isCorrectReleaseYear: true,
     format: '',
-    actors: [{ name: '', surname: '' }]
+    actors: [{ name: '', surname: '' }],
+    sameActor: false
   }
 
   handleInputChange = e => {
@@ -260,17 +256,34 @@ class Form extends Component {
   }, 600)
 
   deleteActor = id => {
-    this.setState(({actors}) => ({ actors: actors.filter((_, i) => id !== i )}))
+    this.setState(({actors, sameActor}) => ({
+      actors: actors.filter((_, i) => id !== i ),
+      sameActor: sameActor && sameActor.id.includes(id) ? false : sameActor
+    }))
   }
 
   setActor = (e, id) => {
     const key = e.target.name
     const value = e.target.value.trim().replace(/[0-9]/g, '')
     const actor = { [key]: value }
+
     this.setState(({actors}) => {
-      actors[id] = {...actors[id], ...actor}
-      return {actors}
+      const actorSameId = this.elementSameId(actors, {...actors[id], ...actor})
+      const newActors = actors.map((prevActor, i) => i === id ? {...actors[id], ...actor} : prevActor)
+      this.setSameActor(actorSameId !== -1 ? {id: [actorSameId, id], key} : false)
+
+      return {actors: newActors, sameActor: false}
     } )
+  }
+
+  setSameActor = debounce (actor => {
+    this.setState({sameActor: actor})
+  }, 600)
+
+  elementSameId = (array, element) => {
+    return array.map(checkingElement => {
+      return JSON.stringify(checkingElement) === JSON.stringify(element)
+    }).indexOf(true)
   }
 
   addField = () => {
@@ -280,6 +293,8 @@ class Form extends Component {
   render () {
     const state = this.state
     const isCorrectReleaseYear = this.state.isCorrectReleaseYear
+    const sameActor = this.state.sameActor
+
     return (
       <div className='addFilm'>
         <FormControl component='fieldset'>
@@ -321,6 +336,7 @@ class Form extends Component {
         </RadioGroup>
 
         {this.state.actors.map((actor, i, arr) => <ActorsField
+          sameActor={sameActor && sameActor.id.includes(i) ? sameActor.key : false}
           key={i} id={i}
           actor={actor}
           onChange={this.setActor}
@@ -346,9 +362,14 @@ class Form extends Component {
 const ActorsField = props => {
   const lastElementProps = props.lastElement ? { onClick: props.addField, styles: { marginBottom: '1em' } } : {}
   const styledField = { style: { marginLeft:'0.5em', marginRigth:'0.5em', marginBottom: props.lastElement ? '1em' : '0'} }
+  const sameActor =
+    props.sameActor
+    ? { error: true, helperText: 'Actors must be unique.' }
+    : {}
   return (
     <div style={{display:'flex', justifyContent: 'center', alignItems: 'center'}} >
       <TextField {...styledField}
+        {...sameActor}
         inputProps={{ maxLength: 90 }}
         autoComplete='true'
         name='name'
@@ -359,6 +380,7 @@ const ActorsField = props => {
         {...lastElementProps}
       />
       <TextField {...styledField}
+        {...sameActor}
         inputProps={{ maxLength: 90 }}
         autoComplete='true'
         name='surname'
