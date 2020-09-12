@@ -1,12 +1,13 @@
 import React, { Component, Fragment } from 'react'
-import { Alert as BAlert, Pagination, Form as BForm, Col } from 'react-bootstrap'
+import { Pagination } from 'react-bootstrap'
 import { Snackbar, TextField, RadioGroup,
   FormControlLabel, FormControl, FormLabel,
-  Radio, Button, Icon, IconButton
+  Radio, Button, Icon, IconButton, Grid, Paper
 } from '@material-ui/core'
 import { Delete as DeleteIcon } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import { makeStyles } from '@material-ui/core/styles'
 
 import 'fontsource-roboto'
 import './App.css'
@@ -93,11 +94,11 @@ class App extends Component {
         <Snackbar
           open={error.show}
           autoHideDuration={3000}
-          onClose={() => this.setState({error: {show: false}})}
+          onClose={() => this.setState(({error}) => ({error: {...error, show: false}}))}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
           <Alert variant='filled' severity='error'>
-            {error.show ? error.message : null}
+            {error.message}
           </Alert>
         </Snackbar>
       </>
@@ -149,11 +150,10 @@ class AddFilm extends Component {
     return (
       <>
         <Button
-          fullWidth='true'
+          fullWidth={true}
           variant='contained'
           color='primary'
           onClick={() => this.setState(({didRenderForm}) => ({didRenderForm: !didRenderForm}))}
-          block
         >Add film</Button>
         {didRenderForm && <Form handleSubmit={this.handleSubmit}/>}
         {didRenderForm &&
@@ -355,12 +355,11 @@ class Form extends Component {
         />)}
         <Button
           disabled={!didSendButtonEnabled}
-          fullWidth='true'
+          fullWidth={true}
           variant='contained'
           color='primary'
           onClick={this.handleSubmitOnClick}
           endIcon={<Icon>send</Icon>}
-          block
         >Send</Button>
         </FormControl>
       </div>
@@ -451,7 +450,7 @@ class AllFilms extends Component {
       <div className='allFilms'>
         {!this.props.films.length &&
           <Alert
-            severity='info' color='#818182'
+            severity='info' color='info'
             style={{margin: '0.1em', marginBottom: '-1.2em', justifyContent: 'center', padding: '1em'}}
           >No movies found. Please add a new movie or change your search parameters.</Alert>
         }
@@ -514,7 +513,10 @@ class FilmInfo extends Component {
         const [, actorSurnameFirstPart, actorSurnameSecondPart] = surname.match(regexp) || [ '', '', surname ]
 
         const separartor = !(i === arr.length - 1)
-        return (<Fragment key={id}><b>{actorNameFirstPart}</b>{actorNameSecondPart} <b>{actorSurnameFirstPart}</b>{actorSurnameSecondPart}{separartor && ',  '}</Fragment>)
+        return (<Fragment key={id}>
+          <b>{actorNameFirstPart}</b>
+          {actorNameSecondPart} <b>{actorSurnameFirstPart}</b>
+          {actorSurnameSecondPart}{separartor && ',  '}</Fragment>)
       })
     : null
 
@@ -539,40 +541,59 @@ class FilmInfo extends Component {
   }
 }
 
-class SearchFilm extends Component {
-  onInputChange = (value, key) => {
-    return this.props.handleSearch({[key]:value})
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+    backgroundColor: 'white',
+    padding: '0.5em',
+    borderRadius: '4px',
+    marginTop: '0.8em',
+    color: theme.palette.text.secondary
+  },
+  input: {
+    justifyContent: 'stretch',
+
+    //
+  }
+}))
+
+function SearchFilm (props) {
+  const onInputChange = (value, key) => {
+    return props.handleSearch({[key]:value})
   }
 
-//need optimization
-  render () {
-    return (
-      <BForm>
-        <BForm.Row>
-          <Col>
-            <BForm.Control
-              maxlength='90'
-              className='bForm'
-              placeholder="Film name"
-              value={this.props.filmSearch}
-              onChange={e => this.onInputChange(e.target.value, 'searchFilm')}
-              autoComplete='off'
-            />
-          </Col>
-          <Col>
-            <BForm.Control
-              maxlength='90'
-              className='bForm'
-              placeholder="Actor name or surname"
-              value={this.props.actorSearch}
-              onChange={e => this.onInputChange(e.target.value, 'searchActor')}
-              autoComplete='off'
-            />
-          </Col>
-        </BForm.Row>
-      </BForm>
-    )
-  }
+
+  const classes = useStyles()
+  return (
+    <Paper className={classes.root}>
+      <Grid container spacing={1}>
+        <Grid item xs={6}>
+          <TextField
+            maxLength='90'
+            fullWidth={true}
+            className={classes.input}
+            label='Film name'
+            variant='outlined'
+            value={props.filmSearch}
+            onChange={e => onInputChange(e.target.value, 'searchFilm')}
+            autoComplete='off'
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField
+            maxLength='90'
+            fullWidth={true}
+            className={classes.input}
+            label='Actor name or surname'
+            variant='outlined'
+            value={props.actorSearch}
+            onChange={e => onInputChange(e.target.value, 'searchActor')}
+            autoComplete='off'
+          />
+        </Grid>
+      </Grid>
+    </Paper>
+  )
 }
 
 
