@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
 import { Snackbar, TextField, RadioGroup, FormControlLabel, FormControl, Radio,
   Button, Icon, IconButton, Grid, Paper
 } from '@material-ui/core'
@@ -269,7 +269,7 @@ class Form extends Component {
     const actor = { [key]: value }
 
     this.setState(({actors}) => {
-      const actorSameId = this.didElementHaveSameId(actors, {...actors[id], ...actor})
+      const actorSameId = this.actorWhoHaveSameFields(actors, {...actors[id], ...actor})
       const newActors = actors.map((prevActor, i) => i === id ? {...actors[id], ...actor} : prevActor)
       if (value !== '') {
         this.setSameActor(actorSameId !== -1 ? {id: [actorSameId, id], key} : false)
@@ -284,7 +284,7 @@ class Form extends Component {
     this.setState({sameActor: actor})
   }, 600)
 
-  didElementHaveSameId = (array, element) => {
+  actorWhoHaveSameFields = (array, element) => {
     return array.map(checkingElement => {
       return JSON.stringify(checkingElement) === JSON.stringify(element)
     }).indexOf(true)
@@ -378,32 +378,55 @@ const ActorsField = props => {
     marginRigth:'0.5em',
     marginBottom: props.lastElement ? '1em' : '0'
   } }
-  const sameActor =
-    props.sameActor
-    ? { error: true, helperText: 'Actors must be unique.' }
-    : {}
+
+  const [emptyFields, setEmptyField] = useState([])
+
+  const onBlurHandler = e => {
+    const target = e.currentTarget
+    if (target.value === '') setEmptyField(emptyFields.concat([target.name]) )
+  }
+
+  const onInputChange = e => {
+    setEmptyField(emptyFields.filter(emptyField => emptyField !== e.target.name))
+    props.onChange(e, props.id)
+  }
+
   return (
     <div style={{display:'flex', justifyContent: 'center', alignItems: 'center'}} >
       <TextField {...styledField}
-        {...sameActor}
+        {...!!props.sameActor || emptyFields.includes('name') ?
+          {
+            error: true,
+            helperText: props.actor.name === ''
+              ? 'Name must be filled.'
+              : 'Actors must be unique.'
+          } : {} }
+        onBlur={onBlurHandler}
         inputProps={{ maxLength: 90 }}
         autoComplete='true'
         name='name'
         label='Name'
         variant='filled'
         value={props.actor.name}
-        onChange={e => props.onChange(e, props.id)}
+        onChange={onInputChange}
         {...lastElementProps}
       />
       <TextField {...styledField}
-        {...sameActor}
+        {...!!props.sameActor || emptyFields.includes('surname') ?
+          {
+            error: true,
+            helperText: props.actor.surname === ''
+              ? 'Surname must be filled.'
+              : 'Actors must be unique.'
+          } : {} }
+        onBlur={onBlurHandler}
         inputProps={{ maxLength: 90 }}
         autoComplete='true'
         name='surname'
         label='Surname'
         variant='filled'
         value={props.actor.surname}
-        onChange={e => props.onChange(e, props.id)}
+        onChange={onInputChange}
         {...lastElementProps}
       />
       <IconButton
