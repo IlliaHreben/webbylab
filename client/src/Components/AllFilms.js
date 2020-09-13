@@ -2,10 +2,10 @@ import React from 'react'
 import { Alert, Pagination } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/core/styles'
 
-import handleApiResponse from '../App.js'
+import { handleApiResponse } from '../App.js'
 import FilmInfo from './FilmInfo'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     '& > *': {
       marginTop: theme.spacing(2),
@@ -32,14 +32,11 @@ const AllFilms = props => {
           headers: { 'Content-Type': 'application/json' }
         })
       )
-      props.handleDelete(id)
+
+      props.fetchFilms()
     } catch (error) {
       props.handleError(error)
     }
-  }
-
-  const changeActivePage = (_, page) => {
-    props.handlePage(page)
   }
 
   const classes = useStyles()
@@ -71,7 +68,7 @@ const AllFilms = props => {
         <Pagination classes={{ ul: classes.ul }}
           color='secondary'
           count={props.pagination.pages}
-          onChange={changeActivePage}
+          onChange={(_, page) => props.handlePage(page)}
         />
       </div>
     </div>

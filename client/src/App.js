@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-// import { Pagination } from 'react-bootstrap'
 import { Snackbar, TextField, RadioGroup, FormControlLabel, FormControl, Radio,
   Button, Icon, IconButton, Grid, Paper
 } from '@material-ui/core'
@@ -38,6 +37,7 @@ class App extends Component {
     if (searchActor) searchParams.set('searchActor', searchActor)
 
     const body = await handleApiResponse( fetch('/api/films?' + searchParams.toString()) )
+
     this.setState(body)
   }
 
@@ -49,10 +49,6 @@ class App extends Component {
   }
 
   debouncedFetch = debounce( this.fetchFilms, 600)
-
-  handleDelete = id => {
-    this.setState(({films}) => ({films: films.filter(film => film.id !== id)}))
-  }
 
   handleError = error => {
     this.setState({error: {show: true, ...error}})
@@ -66,6 +62,17 @@ class App extends Component {
   }
 
   render () {
+    const { films, pagination } = this.state
+    console.log(films)
+    console.log(pagination)
+    // if (!films[0] && pagination.page > pagination.pages) {
+    //   // console.log(films)
+    //   pagination.page --
+    //
+    //   this.setState(({pagination}), this.fetchFilms)
+    //
+    // }
+
     const error = this.state.error
 
     return (
@@ -78,7 +85,7 @@ class App extends Component {
         />
         <AllFilms
           films={this.state.films}
-          handleDelete={this.handleDelete}
+          fetchFilms={this.fetchFilms}
           pagination={this.state.pagination}
           handlePage={this.handlePage}
           handleError={this.handleError}
@@ -87,8 +94,8 @@ class App extends Component {
         />
         <AddFilm
           handleForm={this.handleForm}
-          handleSearch={this.handleSearch}
           handleError={this.handleError}
+          fetchFilms={this.fetchFilms}
         />
         <Snackbar
           open={error.show}
@@ -120,7 +127,7 @@ class AddFilm extends Component {
         body: JSON.stringify(film),
         headers: { 'Content-Type': 'application/json' }
       }) )
-      this.props.handleSearch()
+      this.props.fetchFilms()
       this.setState({didRenderSuccesMessage: true})
       return res
     } catch (error) {
@@ -157,7 +164,7 @@ class AddFilm extends Component {
         {didRenderForm && <Form handleSubmit={this.handleSubmit}/>}
         {didRenderForm &&
           <DropZone
-            handleSearch={this.props.handleSearch}
+            fetchFilms={this.props.fetchFilms}
             handleError={handleError}
             handleModal={this.handleMountModal}
           />
@@ -263,7 +270,7 @@ class Form extends Component {
 
   setActor = (e, id) => {
     const key = e.target.name
-    const value = e.target.value.trim().replace(/[0-9]/g, '')
+    const value = e.target.value
     const actor = { [key]: value }
 
     this.setState(({actors}) => {
@@ -446,7 +453,7 @@ function SearchFilm (props) {
             fullWidth={true}
             className={classes.input}
             label='Film name'
-            variant='outlined'
+            variant='filled'
             value={props.filmSearch}
             onChange={e => onInputChange(e.target.value, 'searchFilm')}
             autoComplete='off'
@@ -458,7 +465,7 @@ function SearchFilm (props) {
             fullWidth={true}
             className={classes.input}
             label='Actor name or surname'
-            variant='outlined'
+            variant='filled'
             value={props.actorSearch}
             onChange={e => onInputChange(e.target.value, 'searchActor')}
             autoComplete='off'

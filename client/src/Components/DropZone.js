@@ -37,7 +37,7 @@ export default function DropZone (props) {
           body: file,
           headers: {'Content-Type': 'text/plain'}
         }) )
-        props.handleSearch()
+        props.fetchFilms()
         console.log(films)
         const createdFilmsCount = films.filter(({ok}) => ok).length
         const notCreatedFilmsCount = films.filter(({ok}) => !ok).length

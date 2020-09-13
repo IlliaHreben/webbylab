@@ -48,8 +48,8 @@ const FilmInfo = props => {
 
       const separartor = !(i === arr.length - 1)
       return (<Fragment key={id}>
-        <b>{actorNameFirstPart}</b> {actorNameSecondPart}
-        <b>{actorSurnameFirstPart}</b> {actorSurnameSecondPart}{separartor && ',  '}
+        <b>{actorNameFirstPart}</b>{actorNameSecondPart}{' '}
+        <b>{actorSurnameFirstPart}</b>{actorSurnameSecondPart}{separartor && ',  '}
       </Fragment>)
     })
   : null

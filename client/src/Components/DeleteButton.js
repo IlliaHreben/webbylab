@@ -19,7 +19,6 @@ class DeleteButton extends PureComponent {
     }
   }
 
-  onClickConfirm = () => this.setState({ didRenderConfirm: true })
   onBlur = () => this.setState({ didRenderConfirm: false })
 
   render() {
@@ -27,9 +26,10 @@ class DeleteButton extends PureComponent {
     return (
       <Button variant='contained'
         color={didRenderConfirm ? 'secondary' : 'primary'}
-        onClick={!didRenderConfirm
-          ? this.onClickConfirm
-          : () => this.props.handleDelete(this.props.id)}
+        onClick={didRenderConfirm
+          ? () => this.props.handleDelete(this.props.id)
+          : () => this.setState({ didRenderConfirm: true })
+        }
       >
         {didRenderConfirm ? 'Sure?' : 'Delete'}
       </Button>

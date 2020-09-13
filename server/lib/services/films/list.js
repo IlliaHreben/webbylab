@@ -31,9 +31,14 @@ const execute = async filters => {
     order: [['name', 'ASC'], [Actors, 'name', 'ASC'], [Actors, 'surname', 'ASC']]
   })
 
+  const pages = Math.ceil(count / filters.size)
   return {
     films: films.map(formatFilm),
-    pagination: { size: filters.size, pages: Math.ceil(count / filters.size) }
+    pagination: {
+      size: filters.size,
+      page: filters.page > pages ? pages : filters.page,
+      pages
+    }
   }
 }
 
