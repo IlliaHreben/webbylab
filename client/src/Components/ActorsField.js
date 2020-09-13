@@ -11,6 +11,7 @@ export default props => {
       }
     : {}
   const styledField = { style: {
+    alignSelf: 'flex-start',
     marginLeft:'0.5em',
     marginRigth:'0.5em',
     marginBottom: props.lastElement ? '1em' : '0'
@@ -31,7 +32,7 @@ export default props => {
   return (
     <div style={{display:'flex', justifyContent: 'center', alignItems: 'center'}} >
       <TextField {...styledField}
-        {...!!props.sameActor || emptyFields.includes('name') ?
+        {...props.sameActor || emptyFields.includes('name') ?
           {
             error: true,
             helperText: props.actor.name === ''
@@ -49,7 +50,7 @@ export default props => {
         {...lastElementProps}
       />
       <TextField {...styledField}
-        {...!!props.sameActor || emptyFields.includes('surname') ?
+        {...props.sameActor || emptyFields.includes('surname') ?
           {
             error: true,
             helperText: props.actor.surname === ''
@@ -67,6 +68,11 @@ export default props => {
         {...lastElementProps}
       />
       <IconButton
+        style={
+          props.lastElement
+          && (props.sameActor
+            || emptyFields.includes('name') || emptyFields.includes('surname')
+          ) ? {} : {alignSelf: 'flex-end'}}
         disabled={props.lastElement}
         aria-label='delete'
         onClick={() => props.deleteActor(props.id)}

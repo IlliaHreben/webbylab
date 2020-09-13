@@ -10,10 +10,43 @@ body {
   justify-content: center;
 }
 
+
+
 #root {
-  width: 50%;
+  width: 40%;
   flex-direction: column;
   justify-content: center;
+}
+
+@media (max-width: 1500px) {
+  #root {
+    width: 55%;
+  }
+}
+
+@media (max-width: 1100px) {
+  #root {
+    width: 70%;
+  }
+}
+
+@media (max-width: 850px) {
+  #root {
+    width: 90%;
+  }
+}
+
+@media (max-width: 640px) {
+  #root {
+    width: 98%;
+  }
+}
+
+@media (max-width: 350px) {
+  #root {
+    min-width: 350px;
+    justify-content: flex-start;
+  }
 }
 
 code {
