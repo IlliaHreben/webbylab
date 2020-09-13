@@ -104,6 +104,7 @@ class AddFilm extends Component {
     didRenderForm: false,
     createdFilmsCount: null,
     notCreatedFilmsCount: null,
+    hasInvalidFormat: false,
     didRenderSuccesMessage: false,
     didRenderBackDrop: false
   }
@@ -166,13 +167,13 @@ class AddFilm extends Component {
         <BackDrop  open={this.state.didRenderBackDrop} />
         <ModalPortal
           show={!notCreatedFilmsCount && createdFilmsCount}
-          title={<p style={{color: 'green', margin: 0}}>File succesfully uploaded!</p>}
+          title={<p style={{ margin: 0}}>File succesfully uploaded!</p>}
           body={<p style={{margin: 0}}>Total films were uploaded to the server <b>{createdFilmsCount}</b>.</p>}
           handleClose={this.handleCloseModal}
         />
         <ModalPortal
           show={!createdFilmsCount && notCreatedFilmsCount}
-          title={<p style={{color: 'red', margin: 0}}>File is broken, or all films are already exist.</p>}
+          title={<p style={{ margin: 0}}>File is broken, or all films are already exist.</p>}
           body={<p style={{margin: 0}}>The file you want to upload does not contain movies, or they are not in the correct format.<br/>
                 The correct format is:<br/>
                 <b>Name:</b> name,<br/>
@@ -183,8 +184,9 @@ class AddFilm extends Component {
         />
         <ModalPortal
           show={createdFilmsCount && notCreatedFilmsCount}
-          title={<p style={{color: 'yellow', margin: 0}}>Not so simple...</p>}
+          title={<p style={{ margin: 0}}>Not so simple...</p>}
           body={<p style={{margin: 0}}>Your file uploaded with varying success.<br/>
+                If you are shown more films than you downloaded, it means that you have not complied the format. Most likely there are extra line breaks or characters at the end of your file.<br/><br/>
                 Uploaded movies count: <b>{createdFilmsCount}</b>.<br/>
                 Unloaded movies count: <b>{notCreatedFilmsCount}</b>.</p>}
           handleClose={this.handleCloseModal}
@@ -302,7 +304,10 @@ class Form extends Component {
       && state.releaseYear
       && state.isCorrectReleaseYear
       && state.format
-      && state.actors.slice(0, -1).filter(({name, surname}) => name && surname).length === state.actors.length -1
+      && state.actors
+          .slice(0, -1)
+          .filter(({name, surname}) => name && surname)
+          .length === state.actors.length -1
       && state.actors.length > 1
       && !sameActor
 
