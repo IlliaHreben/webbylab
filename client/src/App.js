@@ -62,17 +62,6 @@ class App extends Component {
   }
 
   render () {
-    const { films, pagination } = this.state
-    console.log(films)
-    console.log(pagination)
-    // if (!films[0] && pagination.page > pagination.pages) {
-    //   // console.log(films)
-    //   pagination.page --
-    //
-    //   this.setState(({pagination}), this.fetchFilms)
-    //
-    // }
-
     const error = this.state.error
 
     return (
