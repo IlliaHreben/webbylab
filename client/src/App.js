@@ -1,8 +1,8 @@
 import React, { Component, useState } from 'react'
 import { Snackbar, TextField, RadioGroup, FormControlLabel, FormControl, Radio,
-  Button, Icon, IconButton, Grid, Paper
+  Button, IconButton, Grid, Paper
 } from '@material-ui/core'
-import { Delete as DeleteIcon } from '@material-ui/icons'
+import { Delete as DeleteIcon, KeyboardArrowUp, Send } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/core/styles'
 import 'fontsource-roboto'
@@ -104,7 +104,6 @@ class AddFilm extends Component {
     didRenderForm: false,
     createdFilmsCount: null,
     notCreatedFilmsCount: null,
-    hasInvalidFormat: false,
     didRenderSuccesMessage: false,
     didRenderBackDrop: false
   }
@@ -147,9 +146,16 @@ class AddFilm extends Component {
     const createdFilmsCount = this.state.createdFilmsCount
     const notCreatedFilmsCount = this.state.notCreatedFilmsCount
 
+    const arrowStyle = {
+      alignItems: 'center',
+      transition: '.3s',
+      ...(didRenderForm ? { transform: 'rotate(180deg)' } : {})
+    }
+
     return (
       <>
         <Button
+          endIcon={<KeyboardArrowUp style={arrowStyle} />}
           fullWidth={true}
           variant='contained'
           color='primary'
@@ -366,7 +372,7 @@ class Form extends Component {
           variant='contained'
           color='primary'
           onClick={this.handleSubmitOnClick}
-          endIcon={<Icon>send</Icon>}
+          endIcon={<Send />}
         >Send</Button>
         </FormControl>
       </div>
