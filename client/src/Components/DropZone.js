@@ -31,14 +31,13 @@ export default function DropZone (props) {
   const onDrop = useCallback(acceptedFiles => {
     acceptedFiles.forEach(async file => {
       try {
-        console.log(file)
         const films = await handleApiResponse( fetch(`/api/importFilms`, {
           method: 'POST',
           body: file,
           headers: {'Content-Type': 'text/plain'}
         }) )
         props.fetchFilms()
-        console.log(films)
+        props.renderBackDrop(false)
         const createdFilmsCount = films.filter(({ok}) => ok).length
         const notCreatedFilmsCount = films.filter(({ok}) => !ok).length
         props.handleModal({
@@ -52,21 +51,26 @@ export default function DropZone (props) {
     })
   }, [props])
 
+  const onDropRejected = () => {
+    props.handleError({
+      code: 'INVALID_FILE_FORMAT',
+      message: 'The file must have extension ".txt".'
+    })
+  }
+
+  const onDropAccepted = () => {
+    props.renderBackDrop(true)
+  }
+
   const {
     getRootProps,
     getInputProps,
     isDragActive,
     isDragAccept,
-    isDragReject,
-    onDropRejected
-  } = useDropzone({onDrop, accept: 'text/plain'})
+    isDragReject
+  } = useDropzone({onDrop, onDropRejected, onDropAccepted,  accept: 'text/plain'})
 
-  if (onDropRejected) {
-    console.log('______________----')
-    props.handleError({
-    code: 'INVALID_FILE_FORMAT',
-    message: 'The file must have permission .txt'
-  })}
+
 
   const style = useMemo(() => ({
     ...baseStyle,

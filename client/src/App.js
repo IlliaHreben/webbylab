@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles'
 
 import 'fontsource-roboto'
 import './App.css'
+import BackDrop from './Components/BackDrop'
 
 import debounce from 'lodash/debounce'
 
@@ -106,7 +107,8 @@ class AddFilm extends Component {
     didRenderForm: false,
     createdFilmsCount: null,
     notCreatedFilmsCount: null,
-    didRenderSuccesMessage: false
+    didRenderSuccesMessage: false,
+    didRenderBackDrop: false
   }
 
   handleSubmit = async film => {
@@ -123,6 +125,10 @@ class AddFilm extends Component {
       this.props.handleError(error)
       return error
     }
+  }
+
+  renderBackDrop = didRenderBackDrop => {
+    this.setState({didRenderBackDrop})
   }
 
   handleMountModal = filmCounts => {
@@ -156,8 +162,10 @@ class AddFilm extends Component {
             fetchFilms={this.props.fetchFilms}
             handleError={handleError}
             handleModal={this.handleMountModal}
+            renderBackDrop={this.renderBackDrop}
           />
         }
+        <BackDrop  open={this.state.didRenderBackDrop} />
         <ModalPortal
           show={!notCreatedFilmsCount && createdFilmsCount}
           title={<p style={{color: 'green', margin: 0}}>You're file succesfully uploaded!</p>}
