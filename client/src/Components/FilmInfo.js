@@ -31,7 +31,9 @@ const FilmInfo = props => {
   const foundedActors = props.searchActor
   ? props.actors
     .filter(({name, surname}) =>
-      name.startsWith(props.searchActor) || surname.startsWith(props.searchActor))
+      name.toUpperCase().startsWith(props.searchActor.toUpperCase())
+      || surname.toUpperCase().startsWith(props.searchActor.toUpperCase())
+    )
     .map(({id, name, surname}, i, arr) => {
       const regexp = new RegExp(`^(${props.searchActor})(.*)`, 'i')
 
@@ -47,10 +49,12 @@ const FilmInfo = props => {
       ] = surname.match(regexp) || [ '', '', surname ]
 
       const separartor = !(i === arr.length - 1)
-      return (<Fragment key={id}>
-        <b>{actorNameFirstPart}</b>{actorNameSecondPart}{' '}
-        <b>{actorSurnameFirstPart}</b>{actorSurnameSecondPart}{separartor && ',  '}
-      </Fragment>)
+      return (
+        <Fragment key={id}>
+          <b>{actorNameFirstPart}</b>{actorNameSecondPart}{' '}
+          <b>{actorSurnameFirstPart}</b>{actorSurnameSecondPart}{separartor && ',  '}
+        </Fragment>
+      )
     })
   : null
 
