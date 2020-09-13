@@ -29,6 +29,7 @@ test('Film cheking', async () => {
         }))
       })),
       pagination: {
+        page: 1,
         pages: 1,
         size: 10
       }
@@ -53,6 +54,7 @@ test('Film cheking with film name filter', async () => {
         }
       ],
       pagination: {
+        page: 1,
         pages: 1,
         size: 10
       }
@@ -87,6 +89,7 @@ test('Film cheking with actor name filter', async () => {
         }
       ],
       pagination: {
+        page: 1,
         pages: 1,
         size: 10
       }
@@ -103,6 +106,7 @@ test('Film not find', async () => {
     data: {
       films: [],
       pagination: {
+        page: 1,
         size: 10,
         pages: 0
       }
