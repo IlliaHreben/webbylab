@@ -10,7 +10,7 @@
 ## Запуск одной командой в Docker - для приемочного тестирования
 ```bash
 cd webbylab
-docker-compose up
+docker-compose up --build
 ```
 ## Запуск локально - для разработки и запуска тестов
 ```bash

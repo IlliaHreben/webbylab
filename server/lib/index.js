@@ -6,7 +6,7 @@ const serveStatic = require('serve-static')
 const { sequelize } = require('./model')
 const controllers = require('./controllers/films')
 const { handleError } = require('./controllers/middleware')
-const { app: config } = require('./config')
+const config = require('./config')
 
 const api = express.Router()
   .post('/film', asyncHandler(controllers.create))
@@ -30,9 +30,9 @@ const listenPort = port => {
 }
 
 const startApp = async port => {
-  await sequelize.sync({ force: true })
+  await sequelize.sync({ force: config.db.forceReset })
   await listenPort(port)
   console.log('Succesfully started.')
 }
 
-startApp(config.port)
+startApp(config.app.port)

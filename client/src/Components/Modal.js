@@ -1,18 +1,44 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Modal } from 'react-bootstrap'
+import { Dialog, DialogTitle, DialogContent,
+  DialogContentText, DialogActions, Button } from '@material-ui/core'
 
 const ModalPortal = props => {
   const {title, body} = props
   return ReactDOM.createPortal(
-      <Modal show={!!props.show} onHide={props.handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{body}</Modal.Body>
-      </Modal>,
+    <Dialog
+      open={!!props.show}
+      onClose={props.handleClose}
+      aria-labelledby='alert-dialog-title'
+      aria-describedby='alert-dialog-description'
+    >
+      <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
+      <DialogContent>
+        <DialogContentText id='alert-dialog-description'>
+          {body}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={props.handleClose} color='primary' autoFocus>
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>,
     document.getElementById('root')
   )
 }
+//
+// const ModalPortal = props => {
+//   const {title, body} = props
+//   return ReactDOM.createPortal(
+//       <Modal show={!!props.show} onHide={props.handleClose}>
+//         <Modal.Header closeButton>
+//           <Modal.Title>{title}</Modal.Title>
+//         </Modal.Header>
+//         <Modal.Body>{body}</Modal.Body>
+//       </Modal>,
+//     document.getElementById('root')
+//   )
+// }
 
 export default ModalPortal

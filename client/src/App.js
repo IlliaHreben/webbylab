@@ -4,18 +4,15 @@ import { Snackbar, TextField, RadioGroup, FormControlLabel, FormControl, Radio,
 } from '@material-ui/core'
 import { Delete as DeleteIcon } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
-import 'bootstrap/dist/css/bootstrap.min.css'
 import { makeStyles } from '@material-ui/core/styles'
-
 import 'fontsource-roboto'
-import './App.css'
-import BackDrop from './Components/BackDrop'
-
 import debounce from 'lodash/debounce'
 
+import './App.css'
 import DropZone from './Components/DropZone'
 import ModalPortal from './Components/Modal'
 import AllFilms from './Components/AllFilms'
+import BackDrop from './Components/BackDrop'
 
 class App extends Component {
   state = {
@@ -138,7 +135,8 @@ class AddFilm extends Component {
   handleCloseModal = () => {
     this.setState({
       createdFilmsCount: null,
-      notCreatedFilmsCount: null
+      notCreatedFilmsCount: null,
+      didRenderForm: false
     })
   }
 
@@ -168,14 +166,14 @@ class AddFilm extends Component {
         <BackDrop  open={this.state.didRenderBackDrop} />
         <ModalPortal
           show={!notCreatedFilmsCount && createdFilmsCount}
-          title={<p style={{color: 'green', margin: 0}}>You're file succesfully uploaded!</p>}
-          body={<p style={{margin: 0}}>Total files were uploaded to the server <b>{createdFilmsCount}</b>.</p>}
+          title={<p style={{color: 'green', margin: 0}}>File succesfully uploaded!</p>}
+          body={<p style={{margin: 0}}>Total films were uploaded to the server <b>{createdFilmsCount}</b>.</p>}
           handleClose={this.handleCloseModal}
         />
         <ModalPortal
           show={!createdFilmsCount && notCreatedFilmsCount}
-          title={<p style={{color: 'red', margin: 0}}>You're file is broken, or all films are already yet.</p>}
-          body={<p style={{margin: 0}}>The file you want to download does not contain movies, or they are not in the correct format.<br/>
+          title={<p style={{color: 'red', margin: 0}}>File is broken, or all films are already exist.</p>}
+          body={<p style={{margin: 0}}>The file you want to upload does not contain movies, or they are not in the correct format.<br/>
                 The correct format is:<br/>
                 <b>Name:</b> name,<br/>
                 <b>Release Year:</b> releaseYear,<br/>

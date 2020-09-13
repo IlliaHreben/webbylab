@@ -14,19 +14,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/node-fetch": "^2.5.7",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
-    "http-errors": "^1.8.0",
-    "jest-extended": "^0.11.5",
     "livr": "^2.3.1",
     "mysql2": "^2.1.0",
     "sequelize": "^6.3.5",
     "serve-static": "^1.14.1"
   },
   "devDependencies": {
+    "@types/node-fetch": "^2.5.7",
     "@types/jest": "^26.0.13",
     "@types/node": "^14.6.4",
     "eslint": "^7.8.1",
@@ -37,6 +35,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "jest": "^26.4.2",
+    "jest-extended": "^0.11.5",
     "node-fetch": "^2.6.1",
     "nodemon": "^2.0.4",
     "typescript": "^4.0.2"
