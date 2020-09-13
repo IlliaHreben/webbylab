@@ -302,7 +302,8 @@ class Form extends Component {
       && state.releaseYear
       && state.isCorrectReleaseYear
       && state.format
-      && state.actors.filter(({name, surname}) => name && surname)[0]
+      && state.actors.slice(0, -1).filter(({name, surname}) => name && surname).length === state.actors.length -1
+      && state.actors.length > 1
       && !sameActor
 
     return (
@@ -371,7 +372,11 @@ class Form extends Component {
 
 const ActorsField = props => {
   const lastElementProps = props.lastElement
-    ? { onClick: props.addField, styles: { marginBottom: '1em' } }
+    ? { onClick: props.addField,
+        styles: { marginBottom: '1em' },
+        error: false,
+        helperText: false
+      }
     : {}
   const styledField = { style: {
     marginLeft:'0.5em',
