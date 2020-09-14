@@ -7,6 +7,10 @@
 	</p>
 
 # Инструкции
+
+## Demo
+https://superfilms.herokuapp.com/
+
 ## Запуск одной командой в Docker - для приемочного тестирования
 ```bash
 cd webbylab
@@ -21,5 +25,6 @@ docker-compose up
 npm start
 cd ../client
 npm start
+cd ../server # опционально: запуск тестов
 npm test # опционально: запуск тестов
 ```
