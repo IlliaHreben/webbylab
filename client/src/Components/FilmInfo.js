@@ -17,6 +17,10 @@ const useStyles = makeStyles((theme) => ({
   secondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
     color: theme.palette.text.secondary,
+  },
+  accordionBody: {
+    paddingBottom: 0,
+    paddingTop: 0
   }
 }))
 
@@ -72,7 +76,7 @@ const FilmInfo = props => {
         </Typography>
         <Typography className={classes.secondaryHeading} >{foundedActors}</Typography>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails className={classes.accordionBody} >
         <Typography>
           <b>Actors:</b> {actors}<br/>
           <b>Release year:</b> {props.releaseYear}<br/>

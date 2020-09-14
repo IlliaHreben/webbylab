@@ -4,7 +4,7 @@ import { Delete as DeleteIcon } from '@material-ui/icons'
 
 export default props => {
   const lastElementProps = props.lastElement
-    ? { onClick: props.addField,
+    ? { onFocus: props.addField,
         styles: { marginBottom: '1em' },
         error: false,
         helperText: false
@@ -69,10 +69,10 @@ export default props => {
       />
       <IconButton
         style={
-          props.lastElement
-          && (props.sameActor
-            || emptyFields.includes('name') || emptyFields.includes('surname')
-          ) ? {} : {alignSelf: 'flex-end'}}
+          !props.sameActor && !emptyFields.length && !props.lastElement
+          ? {alignSelf: 'flex-end'}
+          : {}
+        }
         disabled={props.lastElement}
         aria-label='delete'
         onClick={() => props.deleteActor(props.id)}
