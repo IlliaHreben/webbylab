@@ -9,6 +9,6 @@ module.exports = {
     forceReset: !!process.env.APP_DB_FORCE_RESET
   },
   app: {
-    port: process.env.APP_PORT
+    port: process.env.APP_PORT || process.env.PORT
   }
 }
